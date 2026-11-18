@@ -38,9 +38,19 @@ def build(read,names):
     art="""<script>document.querySelector('a[href=\"pattern.html\"]').href=URL.createObjectURL(new Blob([Uint8Array.from(atob(\""""+pp+"""\"),c=>c.charCodeAt(0))],{type:'text/html'}));</script>"""
     extra['the-city-that-fits-in-a-book']=extra['the-city-that-fits-in-a-book'].replace('</body>',art+'</body>')
     # An embedded listening room retains every recording, edition and engraved score image.
+    # The visual theatre shares its parent's audio and clock, including in the offline build.
+    cabinet=text('concerto/cabinet/index.html')
+    cabinet_css=text('concerto/cabinet/cabinet.css')
+    plate='data:image/svg+xml;base64,'+base64.b64encode(read('concerto/cabinet/plate.svg')).decode()
+    cabinet_css=re.sub(r"(?<=url\()[\"']?(?:\./)?plate\.svg[\"']?(?=\))",lambda _:plate,cabinet_css)
+    cabinet=cabinet.replace('href="../../index.html"','href="https://isiliconx.github.io/astra6.2/"').replace('<link rel="stylesheet" href="cabinet.css">','<style>'+cabinet_css+'</style>')
+    cabinet=cabinet.replace('src="plate.svg"','src="'+plate+'"')
+    for name in ['score.js','theatre.js','cabinet.js']:
+        cabinet=cabinet.replace('<script defer src="'+name+'"></script>','')
+    cabinet=cabinet.replace('</body>',''.join('<script>'+code(text('concerto/cabinet/'+n))+'</script>' for n in ['score.js','theatre.js','cabinet.js'])+'</body>')
     sh=text('concerto/index.html')
     sh=sh.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"')
-    sh=sh.replace('<link rel="stylesheet" href="room.css">','<style>'+text('concerto/room.css')+'</style>')
+    sh=sh.replace('<link rel="stylesheet" href="room.css?stage=1">','<style>'+text('concerto/room.css')+'</style>')
     files={}
     mt={'.mp3':'audio/mpeg','.pdf':'application/pdf','.zip':'application/zip','.webp':'image/webp','.json':'application/json','.md':'text/plain'}
     for n in names:
@@ -49,11 +59,11 @@ def build(read,names):
             if ext in mt:files[n[len('concerto/'):]]=[mt[ext],base64.b64encode(read(n)).decode()]
     js="window.SHORE_FILES={};for(const [p,[m,b]] of Object.entries("+json.dumps(files,separators=(',',':'))+")){window.SHORE_FILES[p]=URL.createObjectURL(new Blob([Uint8Array.from(atob(b),c=>c.charCodeAt(0))],{type:m}))}"
     # Rebind static URLs before attaching media. The player also resolves dynamic URLs against SHORE_FILES.
-    sh=sh.replace('<script src="room.js" defer></script>','<script>'+js+'</script>')
+    sh=sh.replace('<script src="room.js?stage=1" defer></script>','<script>'+js+';window.SHORE_CABINET_DOC='+code(json.dumps(cabinet))+';</script>').replace('<script src="cabinet-host.js" defer></script>','')
     for f in files:
         for att in ['src','href']:
             sh=sh.replace(att+'="'+f+'"','data-shore-'+att+'="'+f+'"')
-    sh=sh.replace('</body>',"""<script>for(const e of document.querySelectorAll('[data-shore-src],[data-shore-href]'))for(const a of ['src','href']){const p=e.getAttribute('data-shore-'+a);if(p)e.setAttribute(a,window.SHORE_FILES[p])}</script>"""+'<script>'+code(text('concerto/room.js'))+'</script></body>')
+    sh=sh.replace('</body>',"""<script>for(const e of document.querySelectorAll('[data-shore-src],[data-shore-href]'))for(const a of ['src','href']){const p=e.getAttribute('data-shore-'+a);if(p)e.setAttribute(a,window.SHORE_FILES[p])}</script>"""+'<script>'+code(text('concerto/room.js'))+'</script><script>'+code(text('concerto/cabinet-host.js'))+'</script></body>')
     extra['the-other-shore']=sh
     assets={n:uri(n) for n in names if n.startswith('assets/') and Path(n).suffix in {'.jpg','.png','.webp'}}
     h=text('index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('style.css')+'</style>')

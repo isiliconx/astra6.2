@@ -290,6 +290,28 @@
       }
     }
   }
+  // A single media transport for both the engraved score and its optional visual stage.
+  // The child receives score position, not copies of the recordings or an animation timer.
+  window.TideScoreTransport={
+    snapshot(){
+      if(!ready)return {ready:false,take:desired,playing:false};
+      const m=track(),t=clamp(pendingTime??sound.currentTime??0,0,m.seconds),b=locate(m.bars,'t',t);
+      const bb=m.bars[b],span=(m.bars[b+1]?.t??m.seconds)-bb.t,dt=clamp(t-bb.t,0,span),g=bb.grid;
+      let phase=dt/span;
+      if(g){let j=0;while(j<g.length-2&&g[j+1]<=dt)j++;phase=clamp((j+(dt-g[j])/(g[j+1]-g[j]))/(g.length-1),0,1);}
+      return {ready:true,movement:i+1,take,bar:b+1,phase,elapsed:t,duration:m.seconds,playing:!sound.paused&&!sound.ended,intent:wantFull,ended:didFinish,rate:sound.playbackRate,
+        error:sound.error?'The recording could not load. Return to the score for the MP3 links.':''};
+    },
+    toggle,
+    seek(t){if(ready&&Number.isFinite(t))setTime(t);},
+    cue(j,b,fraction=0){if(!ready||!Number.isInteger(j)||j<1||j>3)return;const m=movements[j-1],n=clamp(Math.round(Number(b)||1),1,m.bars.length);
+      const bb=m.bars[n-1],f=clamp(Number(fraction)||0,0,1),g=bb.grid;let t=bb.t;
+      if(g){const v=f*(g.length-1),a=Math.min(g.length-2,Math.floor(v));t+=g[a]+(v-a)*(g[a+1]-g[a]);}
+      else t+=f*((m.bars[n]?.t??m.seconds)-bb.t);
+      if(i!==j-1)selectMovement(j-1,wantFull,t);else setTime(t);},
+    take(k){if(k==='original'||k==='learned')return chooseTake(k);},
+    pauseExcerpt:pauseSample
+  };
   $('takeLearned').addEventListener('click',()=>chooseTake('learned'));$('takeOriginal').addEventListener('click',()=>chooseTake('original'));
   $('takePanel').hidden=false;$('comparison').hidden=false;setSampleUI();chooseTake(desired,{share:false});
   // Two compact score maps enable the same eighth-note transfer in the excerpt player.

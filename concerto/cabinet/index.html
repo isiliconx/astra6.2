@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-type="software">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161d20">
+  <meta name="page-type" content="software">
+  <meta name="site-kind" content="software">
+  <meta name="description" content="The Tide Cabinet, a miniature musical theatre for The Other Shore, Astra’s clarinet concerto. Follow the skiff, its four sails and a light passed from player to player.">
+  <title>The Tide Cabinet | The Other Shore | Astra Observatory</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='9' fill='%23161d20'/%3E%3Cpath d='M6 35 Q24 43 42 31 L34 38 Q20 43 11 39Z M23 8 L9 31 Q15 32 23 30Z M25 12 L36 27 25 30Z' fill='%23deb57c'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="cabinet.css">
+  <script defer src="score.js"></script>
+  <script defer src="theatre.js"></script>
+  <script defer src="cabinet.js"></script>
+</head>
+<body>
+  <svg class="symbol-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="icon-score" viewBox="0 0 24 24"><path d="m9 6-6 6 6 6M3 12h15a2 2 0 0 0 2-2V6"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M7 4.4c0-.6.6-.9 1.1-.6l12 7.5a.8.8 0 0 1 0 1.4l-12 7.5c-.5.3-1.1 0-1.1-.6z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M5.5 4.5h4.6v15H5.5zm8.4 0h4.6v15h-4.6z"/></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="m4.5 6.5 3.5 3.5 3.5-3.5"/></symbol>
+    <symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12S5.3 6.2 12 6.2 22 12 22 12s-3.3 5.8-10 5.8S2 12 2 12Z"/><circle cx="12" cy="12" r="2.4"/></symbol>
+    <symbol id="icon-skiff" viewBox="0 0 48 36"><path d="M3 24q20 5 42-3l-7 8q-17 4-28 0zM23 21V4m-3 2L10 20l10-1m6-12 8 11-8 2M7 33q9-2 17-1t17-2"/></symbol>
+    <symbol id="icon-sails" viewBox="0 0 48 36"><path d="M3 29h42M8 26V7l6 16-6 2m10 1V3l6 20-6 2m10 1V8l6 15-6 2m9 1V12l5 11-5 2"/></symbol>
+    <symbol id="icon-lantern" viewBox="0 0 48 36"><path d="M17 11h14l-2 16H19zM15 11l9-5 9 5M18 28h12m-13 3h14M20 5V4a4 4 0 0 1 8 0v1M23 13l-1 11h5l-1-11m-11 4-4-1m22 1 4-1"/></symbol>
+    <symbol id="icon-stage" viewBox="0 0 42 42"><g fill="none" stroke="currentColor" stroke-width="1.25"><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(-36 21 21)"/><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(34 21 21)"/><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(91 21 21)"/></g><circle cx="21" cy="21" r="2" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+  <a class="skip" href="#performance">Skip to the performance</a>
+  <header class="mast page">
+    <a class="house" href="../../index.html" target="_top"><svg width="29" height="29" aria-hidden="true"><use href="#icon-stage"/></svg><span>Astra Observatory</span></a>
+    <a class="back" id="scoreBack" href="../index.html#listening" target="_top"><svg class="icon" aria-hidden="true"><use href="#icon-score"/></svg>Return to score</a>
+  </header>
+  <main class="page">
+    <div class="marquee">
+      <h1>The Tide Cabinet</h1>
+      <p>A miniature theatre for <br><cite>The Other Shore</cite></p>
+    </div>
+    <section id="performance" class="cabinet" aria-label="The performance" tabindex="-1">
+      <div class="bezel" id="stageWrap">
+        <div class="stage-well">
+          <canvas id="theatre" width="1500" height="630" role="img" aria-label="A miniature theatre on the water. A skiff carries the musical line; four sails trace its call and a lantern marks the leading player."></canvas>
+        </div>
+        <span class="screw tl" aria-hidden="true"></span><span class="screw tr" aria-hidden="true"></span>
+        <span class="screw bl" aria-hidden="true"></span><span class="screw br" aria-hidden="true"></span>
+      </div>
+      <div class="console interactive">
+        <button id="play" class="play" type="button" aria-pressed="false">
+          <svg class="play-icon icon" aria-hidden="true"><use href="#icon-play"/></svg>
+          <svg class="pause-icon icon" aria-hidden="true"><use href="#icon-pause"/></svg>
+          <span id="playLabel">Play</span>
+        </button>
+        <div class="timeline">
+          <span id="clock" class="clock" aria-hidden="true">0:00</span>
+          <div class="guide"><input id="seek" type="range" min="0" max="100" value="0" step=".01" aria-label="Position in the movement"></div>
+          <span id="end" class="clock" aria-hidden="true">11:23</span>
+        </div>
+      </div>
+      <div class="registers interactive">
+        <label class="register register-movement" for="movement">Movement
+          <span class="select-wrap"><select id="movement"><option value="1">I. Across the water</option><option value="2">II. The lamp on the far bank</option><option value="3">III. The inward step</option></select><svg aria-hidden="true"><use href="#icon-chevron"/></svg></span>
+        </label>
+        <label class="register register-take" for="take">Performance
+          <span class="select-wrap"><select id="take"><option value="learned">Learned take</option><option value="original">Original take</option></select><svg aria-hidden="true"><use href="#icon-chevron"/></svg></span>
+        </label>
+        <label class="register register-focus" for="focus">View
+          <span class="select-wrap"><select id="focus"><option value="stage">Full stage</option><option value="skiff">Skiff</option><option value="lamp">Lantern</option></select><svg aria-hidden="true"><use href="#icon-chevron"/></svg></span>
+        </label>
+        <div class="toggles">
+          <button id="motion" class="switch" type="button" aria-pressed="false" aria-controls="theatre"><span class="switch-led" aria-hidden="true"></span>Still tableaux</button>
+          <button id="audioOnly" class="switch" type="button" aria-pressed="false" aria-controls="stageWrap"><svg class="icon" aria-hidden="true"><use href="#icon-eye"/></svg><span>Hide stage</span></button>
+        </div>
+      </div>
+      <audio id="audio" preload="none" src="../audio/expressive-1.mp3" controls aria-label="The Other Shore, first movement"></audio>
+      <p class="status" id="status" role="status"></p>
+      <noscript>
+        <style>
+          .interactive,.program,.status{display:none!important}
+          #audio{display:block!important;width:calc(100% - 32px);margin:16px}
+        </style>
+        <p class="without-js">The player above plays the first movement. Listen to <a href="../audio/expressive-2.mp3">movement II</a> or <a href="../audio/expressive-3.mp3">movement III</a>. The moving theatre needs JavaScript.</p>
+      </noscript>
+    </section>
+    <section class="program interactive" aria-label="Scenes and stage notes">
+      <div class="scene">
+        <div class="cue-line"><span id="sceneIndex">Scene I</span><span aria-hidden="true"></span><span id="barRead">Bar 1</span></div>
+        <h2 id="sceneTitle">Across the water</h2>
+        <p id="sceneCopy">The strings call across the water before the clarinet answers.</p>
+        <p id="speaker"></p>
+        <div class="memory-hinge"><button id="memoryHinge" type="button"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6c6-3 10 2 10 6s2 6 6 4m-3-3 3 3-3 3M20 7c-3-2-5-1-7 2m-4 6c-1 2-3 3-5 2"/></svg><span>Find the Adagio memory</span></button><small>One phrase, two movements. Turn the hinge to switch between them on the same note.</small></div>
+      </div>
+      <div class="scene-list">
+        <h2>Scene changes</h2>
+        <div id="waypoints" role="group" aria-label="Jump to a scene"></div>
+      </div>
+    </section>
+    <details class="legend">
+      <summary><span>How to read the stage</span><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></summary>
+      <dl>
+        <div><dt><svg aria-hidden="true"><use href="#icon-skiff"/></svg>The skiff</dt><dd>Follow the boat across the water. It carries the travelling musical line.</dd></div>
+        <div><dt><svg aria-hidden="true"><use href="#icon-sails"/></svg>Four sails</dt><dd>Each sail stands for one of the four notes in the call.</dd></div>
+        <div><dt><svg aria-hidden="true"><use href="#icon-lantern"/></svg>The lantern</dt><dd>The light passes between the player on the bank and the clarinet aboard the skiff.</dd></div>
+      </dl>
+    </details>
+  </main>
+  <footer class="footer page"><p>An original concerto by Astra. Both performances use sampled instruments.</p></footer>
+</body>
+</html>

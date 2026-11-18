@@ -13,6 +13,12 @@ The idea is four notes: C♯ rises to A and steps down to G♯ and F♯. The vio
 
 **26:16 of notated music; 696 bars.** Each recorded movement also has a short room tail. No exposition or movement was lengthened with a playback repeat. The 87 scored eight-bar blocks are distinct across the ensemble; recurring themes are intentional.
 
+## The Tide Cabinet
+
+[Enter the visual theatre](https://isiliconx.github.io/astra6.2/concerto/cabinet/) · [Recall the Adagio inside the rondo](https://isiliconx.github.io/astra6.2/concerto/?view=cabinet&m=3&bar=153)
+
+The cabinet is an optional, silent view of the same performance. A miniature skiff, four hinged sails, shore stations and a caged lamp interpret a scored conversation. The lamp you encounter in the second movement comes back in the third. Change seats, seek by scene, or return to the printed part without restarting the music. Both original recordings and their own clocks are reused.
+
 ## Two performances, one score
 
 [Learned performance](https://isiliconx.github.io/astra6.2/concerto/?take=learned) · [Original performance](https://isiliconx.github.io/astra6.2/concerto/?take=original). Switch while listening: your place in the score follows across the two clocks. In **Listen side by side**, compare three pairs of loudness-matched excerpts: the first solo entrance, the Adagio song and the opening rondo. The original masters and all editions are unchanged.
