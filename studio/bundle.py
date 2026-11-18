@@ -42,9 +42,9 @@ def build(read,names):
     sh=sh.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"')
     sh=sh.replace('<link rel="stylesheet" href="room.css">','<style>'+text('concerto/room.css')+'</style>')
     files={}
-    mt={'.mp3':'audio/mpeg','.pdf':'application/pdf','.zip':'application/zip','.webp':'image/webp','.json':'application/json'}
+    mt={'.mp3':'audio/mpeg','.pdf':'application/pdf','.zip':'application/zip','.webp':'image/webp','.json':'application/json','.md':'text/plain'}
     for n in names:
-        if n.startswith('concerto/') and (n.startswith('concerto/edition/') or n.startswith('concerto/audio/') or n in ('concerto/shore.webp','concerto/program.json')):
+        if n.startswith('concerto/') and (n.startswith('concerto/edition/') or n.startswith('concerto/audio/') or n in ('concerto/shore.webp','concerto/program.json','concerto/expressive.json','concerto/production/learned/README.md')):
             ext=Path(n).suffix
             if ext in mt:files[n[len('concerto/'):]]=[mt[ext],base64.b64encode(read(n)).decode()]
     js="window.SHORE_FILES={};for(const [p,[m,b]] of Object.entries("+json.dumps(files,separators=(',',':'))+")){window.SHORE_FILES[p]=URL.createObjectURL(new Blob([Uint8Array.from(atob(b),c=>c.charCodeAt(0))],{type:m}))}"

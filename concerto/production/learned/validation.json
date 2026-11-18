@@ -1,0 +1,102 @@
+{
+ "heldout_pressure_transfer": {
+  "n": 12,
+  "model": {
+   "onset_harmonic_mae_db": 4.762,
+   "body_harmonic_mae_db": 3.6,
+   "body_level_mae_db": 1.237,
+   "attack_log_mae": 0.544,
+   "release_log_mae": 0.407
+  },
+  "medium_carrier_alone": {
+   "onset_harmonic_mae_db": 7.823,
+   "body_harmonic_mae_db": 5.897,
+   "body_level_mae_db": 5.548,
+   "attack_log_mae": 0.472,
+   "release_log_mae": 0.372
+  }
+ },
+ "crossvalidated_pressure_transfer": {
+  "n": 64,
+  "model": {
+   "onset_harmonic_mae_db": 5.18,
+   "body_harmonic_mae_db": 4.35,
+   "body_level_mae_db": 2.147,
+   "attack_log_mae": 0.414,
+   "release_log_mae": 0.415
+  },
+  "medium_carrier_alone": {
+   "onset_harmonic_mae_db": 6.888,
+   "body_harmonic_mae_db": 5.93,
+   "body_level_mae_db": 4.819,
+   "attack_log_mae": 0.402,
+   "release_log_mae": 0.304
+  }
+ },
+ "tree": "440300901dfe9275fd84e0b7763af1f8443ae62e",
+ "takes": 97,
+ "sustained": 33,
+ "staccato": 64,
+ "layers": 3,
+ "heldout": {
+  "roots": [
+   58,
+   77
+  ],
+  "train": 79,
+  "test": 18,
+  "model": {
+   "onset_harmonic_mae_db": 7.128,
+   "body_harmonic_mae_db": 7.422,
+   "body_level_mae_db": 3.792,
+   "attack_log_mae": 0.448,
+   "release_log_mae": 0.751
+  },
+  "articulation_median": {
+   "onset_harmonic_mae_db": 7.745,
+   "body_harmonic_mae_db": 8.239,
+   "body_level_mae_db": 5.672,
+   "attack_log_mae": 0.318,
+   "release_log_mae": 0.306
+  },
+  "nearest_root_same_layer": {
+   "onset_harmonic_mae_db": 6.499,
+   "body_harmonic_mae_db": 6.151,
+   "body_level_mae_db": 4.897,
+   "attack_log_mae": 0.343,
+   "release_log_mae": 0.478
+  }
+ },
+ "leave_one_sounding_root_out": {
+  "folds": 11,
+  "model": {
+   "onset_harmonic_mae_db": 8.254,
+   "body_harmonic_mae_db": 8.887,
+   "body_level_mae_db": 4.038,
+   "attack_log_mae": 0.448,
+   "release_log_mae": 0.845
+  },
+  "articulation_median": {
+   "onset_harmonic_mae_db": 8.711,
+   "body_harmonic_mae_db": 9.57,
+   "body_level_mae_db": 5.095,
+   "attack_log_mae": 0.452,
+   "release_log_mae": 0.499
+  },
+  "nearest_root_same_layer": {
+   "onset_harmonic_mae_db": 7.417,
+   "body_harmonic_mae_db": 7.604,
+   "body_level_mae_db": 3.42,
+   "attack_log_mae": 0.426,
+   "release_log_mae": 0.625
+  }
+ },
+ "model": "nonlinear multi-output acoustic kernel ridge regressor",
+ "responses": [
+  "onset eight relative harmonic energies, dB",
+  "body eight relative harmonic energies, dB",
+  "body level dBFS",
+  "log attack seconds",
+  "log release seconds"
+ ]
+}

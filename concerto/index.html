@@ -35,12 +35,13 @@
 <section id="listening" class="desk" aria-labelledby="desk-title">
 <div class="wrapper desk-inner">
 <div class="desk-head"><h2 id="desk-title">The listening room</h2><p>Choose a movement, or listen to the three in order.</p></div>
+<div id="takePanel" class="take-panel" hidden><div class="take-label" id="takeLabel">Performance</div><div class="switcher" role="group" aria-labelledby="takeLabel"><button id="takeLearned" type="button" aria-pressed="true">Learned</button><button id="takeOriginal" type="button" aria-pressed="false">Original</button></div><span id="takeNote" class="take-note" role="status">Switch takes without losing your place.</span></div>
 <div class="track-list" id="tracks" aria-label="Select a movement">
-<a href="audio/1.mp3"><i>I</i><span>Allegro con respiro</span></a>
-<a href="audio/2.mp3"><i>II</i><span>Adagio cantabile</span></a>
-<a href="audio/3.mp3"><i>III</i><span>Rondo: Allegro leggiero</span></a>
+<a href="audio/expressive-1.mp3"><i>I</i><span>Allegro con respiro</span></a>
+<a href="audio/expressive-2.mp3"><i>II</i><span>Adagio cantabile</span></a>
+<a href="audio/expressive-3.mp3"><i>III</i><span>Rondo: Allegro leggiero</span></a>
 </div>
-<audio id="sound" preload="metadata" controls aria-label="Concerto recording" src="audio/1.mp3"></audio>
+<audio id="sound" preload="none" controls aria-label="Concerto recording" src="audio/expressive-1.mp3"></audio>
 <div class="transport js-only" hidden>
 <button id="play" type="button" class="disc" aria-label="Play movement"><svg aria-hidden="true"><use href="#i-play"/></svg></button>
 <div class="timeline"><div class="time-head"><span id="nowTitle">Movement I</span><span><b id="elapsed">0:00</b> / <span id="duration">–:––</span></span></div>
@@ -60,6 +61,15 @@
 <div class="passage js-only" hidden><div class="pass-select"><label for="chapter">Rehearsal passage</label><select id="chapter" aria-describedby="chapterNote"></select></div>
 <button id="loop" type="button" aria-pressed="false"><svg aria-hidden="true"><use href="#i-loop"/></svg><span>Loop passage</span></button></div>
 <p class="chapter-note js-only" id="chapterNote" hidden></p>
+<section class="comparison" id="comparison" aria-labelledby="compareTitle" hidden>
+<div class="compare-copy"><h3 id="compareTitle">Listen side by side</h3><p>These excerpts are matched in loudness. Switch from A to B mid-phrase to hear the difference. Your place in the full concerto is saved.</p><p>For the learned take, a model fitted to 97 clarinet recordings adjusts the strength and overtones of the sampled reed as requested playing intensity changes. Its response differs for high and low notes, and for short and sustained ones. The breaths, tempo changes and orchestral balance were shaped separately. <a href="production/learned/README.md">How the clarinet model works</a>.</p></div>
+<div class="compare-controls"><label class="excerpt-label" for="scene">Excerpt</label>
+<select id="scene"><option value="1">I. The clarinet enters · bars 41–48</option><option value="2">II. The Adagio opens · bars 1–4</option><option value="3">III. The rondo refrain · bars 1–8</option></select>
+<div class="compare-actions"><button type="button" id="abPlay" class="excerpt-play"><svg aria-hidden="true"><use href="#i-play"/></svg><span>Play excerpt</span></button>
+<div class="switcher" role="group" aria-label="Excerpt performance"><button type="button" id="abOriginal" aria-pressed="false"><i>A</i> Original</button><button type="button" id="abLearned" aria-pressed="true"><i>B</i> Learned</button></div></div>
+<div class="excerpt-position"><input id="abSeek" type="range" class="scrubber" min="0" max="1" step=".001" value="0" aria-label="Excerpt position"><span id="abTime" aria-hidden="true">0:00</span></div>
+<p class="excerpt-status" id="abStatus" role="status"></p>
+<audio id="sample" preload="none" hidden aria-label="Comparison excerpt"></audio></div></section>
 <noscript><p>The recording above plays movement I. Open the other movements from the list, or download the printed part to follow along. Bar tracking needs JavaScript.</p></noscript>
 </div>
 </section>
@@ -79,10 +89,11 @@
 <p class="reference-note">Mozart’s <a href="https://kv.mozarteum.at/en/work/concerto-in-a-for-clarinet-and-orchestra-7312">Clarinet Concerto in A, K. 622</a>, written in 1791 for Anton Stadler, is the point of departure. <i>The Other Shore</i> is a new composition by Astra, not a recovered work or a completion of Mozart.</p></div>
 </div></section>
 <section class="edition wrapper" id="edition" aria-labelledby="edition-title"><div class="edition-intro"><h2 id="edition-title">The edition</h2><p>Play from the solo part, study the full score, or take the music off the stand.</p>
-<p class="recording-note">The recording is a sampled realization, not a live performance. The instruments use CC0 recordings from <a href="https://versilian-studios.com/vsco-community/">Versilian Studios Chamber Orchestra: Community Edition</a>.</p></div>
+<p class="recording-note">Both performances use sampled instruments, not a live orchestra. The timbres come from CC0 recordings by <a href="https://versilian-studios.com/vsco-community/">Versilian Studios Chamber Orchestra: Community Edition</a>.</p></div>
 <div class="downloads"><a href="edition/clarinet-in-a.pdf"><span>Clarinet in A</span><small>Solo part · PDF</small><svg aria-hidden="true"><use href="#i-down"/></svg></a><a href="edition/conductor-score.pdf"><span>Conductor’s score</span><small>Full score · PDF</small><svg aria-hidden="true"><use href="#i-down"/></svg></a>
 <a href="edition/editable-scores.zip" download><span>Editable scores</span><small>MusicXML · ZIP</small><svg aria-hidden="true"><use href="#i-down"/></svg></a><a href="edition/performance-midi.zip" download><span>Performance files</span><small>MIDI · ZIP</small><svg aria-hidden="true"><use href="#i-down"/></svg></a>
-<div class="recordings"><span>Recordings <small>MP3</small></span><a href="audio/1.mp3" download aria-label="Download movement I MP3">I</a><a href="audio/2.mp3" download aria-label="Download movement II MP3">II</a><a href="audio/3.mp3" download aria-label="Download movement III MP3">III</a></div></div></section>
+<div class="recordings"><span>Learned performance <small>MP3</small></span><a href="audio/expressive-1.mp3" download aria-label="Download learned movement I MP3">I</a><a href="audio/expressive-2.mp3" download aria-label="Download learned movement II MP3">II</a><a href="audio/expressive-3.mp3" download aria-label="Download learned movement III MP3">III</a></div>
+<div class="recordings"><span>Original performance <small>MP3</small></span><a href="audio/1.mp3" download aria-label="Download original movement I MP3">I</a><a href="audio/2.mp3" download aria-label="Download original movement II MP3">II</a><a href="audio/3.mp3" download aria-label="Download original movement III MP3">III</a></div></div></section>
 </main>
 <footer class="wrapper"><a href="../index.html">Astra Observatory</a><span>The Other Shore</span><a href="#top">Back to top</a></footer>
 </body></html>

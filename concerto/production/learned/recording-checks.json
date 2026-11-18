@@ -1,0 +1,380 @@
+{
+  "work": "The Other Shore",
+  "audio": "32000 Hz stereo MP3, FFmpeg libmp3lame, 112 kb/s",
+  "note": "A measurement of a rendered performance, not a human listening or playing trial. All solo / orchestra ratios are before the common mastering gain, on active solo 120-ms windows.",
+  "movements": [
+    {
+      "movement": 1,
+      "bars": 280,
+      "originalScoreSeconds": 682.985757,
+      "learnedScoreSeconds": 676.86223,
+      "decodedSecondsWithTail": 678.242,
+      "referenceAudioSha256": "4573f7733f06b88c9ab519cd8d302c8c63cdf16175b496604f5d985a2dcc232a",
+      "origR128": {
+        "LUFS": -20.8,
+        "LRA": 9.6,
+        "dBTP": -2.1
+      },
+      "newR128": {
+        "LUFS": -20.9,
+        "LRA": 10.3,
+        "dBTP": -2.9
+      },
+      "clips": {
+        "original": {
+          "bars": [
+            41,
+            48
+          ],
+          "seconds": 19.3737,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 3.5,
+            "dBTP": -9.6
+          }
+        },
+        "expressive": {
+          "bars": [
+            41,
+            48
+          ],
+          "seconds": 19.299,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 3.5,
+            "dBTP": -9.8
+          }
+        }
+      },
+      "balance": {
+        "original": [
+          {
+            "broadDb": 1.81,
+            "reedBandDb": -2.11,
+            "active120ms": 149,
+            "range": [
+              41,
+              48
+            ]
+          },
+          {
+            "broadDb": 2.28,
+            "reedBandDb": 0.24,
+            "active120ms": 151,
+            "range": [
+              73,
+              80
+            ]
+          },
+          {
+            "broadDb": 3.04,
+            "reedBandDb": -0.54,
+            "active120ms": 144,
+            "range": [
+              201,
+              208
+            ]
+          }
+        ],
+        "new": [
+          {
+            "broadDb": 6.97,
+            "reedBandDb": 2.38,
+            "active120ms": 147,
+            "range": [
+              41,
+              48
+            ]
+          },
+          {
+            "broadDb": 7.52,
+            "reedBandDb": 6.52,
+            "active120ms": 149,
+            "range": [
+              73,
+              80
+            ]
+          },
+          {
+            "broadDb": 7.83,
+            "reedBandDb": 4.75,
+            "active120ms": 142,
+            "range": [
+              201,
+              208
+            ]
+          }
+        ]
+      },
+      "solo": {
+        "events": 942,
+        "articulations": {
+          "normal": 201,
+          "legato": 741
+        },
+        "roleTrimDbRange": [
+          -6.2,
+          -1.25
+        ],
+        "dynamicsRange": [
+          0.125,
+          0.886
+        ]
+      }
+    },
+    {
+      "movement": 2,
+      "bars": 144,
+      "originalScoreSeconds": 509.485356,
+      "learnedScoreSeconds": 511.440684,
+      "decodedSecondsWithTail": 512.822,
+      "referenceAudioSha256": "60d85c6c3ba4fc01a7644b77e6ae06ba9ddb3a026dba4c7bf34d3de22add8af2",
+      "origR128": {
+        "LUFS": -22.7,
+        "LRA": 10.4,
+        "dBTP": -2.2
+      },
+      "newR128": {
+        "LUFS": -22.8,
+        "LRA": 10.4,
+        "dBTP": -4.2
+      },
+      "clips": {
+        "original": {
+          "bars": [
+            1,
+            4
+          ],
+          "seconds": 14.2644,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 1.8,
+            "dBTP": -12.3
+          }
+        },
+        "expressive": {
+          "bars": [
+            1,
+            4
+          ],
+          "seconds": 13.9191,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 1.6,
+            "dBTP": -11.5
+          }
+        }
+      },
+      "balance": {
+        "original": [
+          {
+            "broadDb": 5.19,
+            "reedBandDb": 1.87,
+            "active120ms": 107,
+            "range": [
+              1,
+              4
+            ]
+          },
+          {
+            "broadDb": 0.58,
+            "reedBandDb": -4.34,
+            "active120ms": 207,
+            "range": [
+              105,
+              112
+            ]
+          },
+          {
+            "broadDb": -0.41,
+            "reedBandDb": 0.07,
+            "active120ms": 200,
+            "range": [
+              73,
+              80
+            ]
+          }
+        ],
+        "new": [
+          {
+            "broadDb": 7.43,
+            "reedBandDb": 4.47,
+            "active120ms": 105,
+            "range": [
+              1,
+              4
+            ]
+          },
+          {
+            "broadDb": 7.4,
+            "reedBandDb": 4.08,
+            "active120ms": 209,
+            "range": [
+              105,
+              112
+            ]
+          },
+          {
+            "broadDb": 1.92,
+            "reedBandDb": 2.13,
+            "active120ms": 202,
+            "range": [
+              73,
+              80
+            ]
+          }
+        ]
+      },
+      "solo": {
+        "events": 268,
+        "articulations": {
+          "normal": 104,
+          "legato": 164
+        },
+        "roleTrimDbRange": [
+          -6.25,
+          -2.33
+        ],
+        "dynamicsRange": [
+          0.045,
+          0.911
+        ]
+      }
+    },
+    {
+      "movement": 3,
+      "bars": 272,
+      "originalScoreSeconds": 383.812663,
+      "learnedScoreSeconds": 374.645676,
+      "decodedSecondsWithTail": 376.026,
+      "referenceAudioSha256": "c67e9ea6911ed3dd2e6b0fb6c3ac0254afbbe467da7112547c4688b6ee1818e5",
+      "origR128": {
+        "LUFS": -21.5,
+        "LRA": 10.0,
+        "dBTP": -2.1
+      },
+      "newR128": {
+        "LUFS": -21.6,
+        "LRA": 10.2,
+        "dBTP": -4.3
+      },
+      "clips": {
+        "original": {
+          "bars": [
+            1,
+            8
+          ],
+          "seconds": 11.2292,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 0.9,
+            "dBTP": -7.3
+          }
+        },
+        "expressive": {
+          "bars": [
+            1,
+            8
+          ],
+          "seconds": 10.9742,
+          "measured": {
+            "LUFS": -21.6,
+            "LRA": 2.0,
+            "dBTP": -10.5
+          }
+        }
+      },
+      "balance": {
+        "original": [
+          {
+            "broadDb": -1.05,
+            "reedBandDb": -5.09,
+            "active120ms": 86,
+            "range": [
+              1,
+              8
+            ]
+          },
+          {
+            "broadDb": -0.23,
+            "reedBandDb": -3.55,
+            "active120ms": 98,
+            "range": [
+              153,
+              160
+            ]
+          },
+          {
+            "broadDb": 0.99,
+            "reedBandDb": 3.5,
+            "active120ms": 68,
+            "range": [
+              129,
+              136
+            ]
+          }
+        ],
+        "new": [
+          {
+            "broadDb": 5.22,
+            "reedBandDb": 2.66,
+            "active120ms": 85,
+            "range": [
+              1,
+              8
+            ]
+          },
+          {
+            "broadDb": 8.75,
+            "reedBandDb": 5.46,
+            "active120ms": 93,
+            "range": [
+              153,
+              160
+            ]
+          },
+          {
+            "broadDb": 3.68,
+            "reedBandDb": 7.34,
+            "active120ms": 77,
+            "range": [
+              129,
+              136
+            ]
+          }
+        ]
+      },
+      "solo": {
+        "events": 980,
+        "articulations": {
+          "normal": 291,
+          "legato": 511,
+          "short": 178
+        },
+        "roleTrimDbRange": [
+          -0.19,
+          3.27
+        ],
+        "dynamicsRange": [
+          0.045,
+          0.888
+        ]
+      }
+    }
+  ],
+  "cadenzaSpectralTest": {
+    "file": "expressive-1.mp3",
+    "notesTested": 131,
+    "pitchMatchesCenter": 127,
+    "pitchMatchesLate": 127,
+    "anyOfThreeWindows": 127,
+    "method": "24k mono decode of actual final MP3; bounded five-harmonic search over 66 MIDI notes at fractional note windows 22\u201379%, 63\u201396%, 30\u201375%; all solo notes in I.233\u2013248. Metric is not a listening judgment."
+  },
+  "cadenzaPeriodicTest": {
+    "method": "Blind YIN normalized squared-difference dip on central 23\u201379% of each cadenza note (score is consulted only for evaluation).",
+    "matched": 131,
+    "n": 131,
+    "medianCents": 1.999999999999602,
+    "outliers": []
+  }
+}

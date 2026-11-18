@@ -1,0 +1,140 @@
+{
+ "blind_rendered_audio": {
+  "heldout_roots": [
+   58,
+   77
+  ],
+  "heldout_takes": 18,
+  "soft_loud_targets": 12,
+  "mode": "fixed acoustic analysis windows on actual synthesized, amplitude-normalized harmonic spectra; soft/loud minus medium; averaged over eight harmonics",
+  "model_db": 3.669,
+  "fixed_carrier_db": 5.897,
+  "per_take": [
+   {
+    "root": 58,
+    "art": "short",
+    "layer": 1,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 2.718,
+    "fixed_carrier_body_harmonic_delta_mae_db": 6.027
+   },
+   {
+    "root": 58,
+    "art": "short",
+    "layer": 1,
+    "rr": 2,
+    "modeled_body_harmonic_delta_mae_db": 2.099,
+    "fixed_carrier_body_harmonic_delta_mae_db": 5.236
+   },
+   {
+    "root": 58,
+    "art": "short",
+    "layer": 3,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 4.059,
+    "fixed_carrier_body_harmonic_delta_mae_db": 2.849
+   },
+   {
+    "root": 58,
+    "art": "short",
+    "layer": 3,
+    "rr": 2,
+    "modeled_body_harmonic_delta_mae_db": 3.795,
+    "fixed_carrier_body_harmonic_delta_mae_db": 2.62
+   },
+   {
+    "root": 77,
+    "art": "short",
+    "layer": 1,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 2.804,
+    "fixed_carrier_body_harmonic_delta_mae_db": 9.426
+   },
+   {
+    "root": 77,
+    "art": "short",
+    "layer": 1,
+    "rr": 2,
+    "modeled_body_harmonic_delta_mae_db": 3.242,
+    "fixed_carrier_body_harmonic_delta_mae_db": 9.976
+   },
+   {
+    "root": 77,
+    "art": "short",
+    "layer": 3,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 2.703,
+    "fixed_carrier_body_harmonic_delta_mae_db": 2.2
+   },
+   {
+    "root": 77,
+    "art": "short",
+    "layer": 3,
+    "rr": 2,
+    "modeled_body_harmonic_delta_mae_db": 2.099,
+    "fixed_carrier_body_harmonic_delta_mae_db": 3.13
+   },
+   {
+    "root": 58,
+    "art": "normal",
+    "layer": 1,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 7.846,
+    "fixed_carrier_body_harmonic_delta_mae_db": 13.273
+   },
+   {
+    "root": 58,
+    "art": "normal",
+    "layer": 3,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 2.241,
+    "fixed_carrier_body_harmonic_delta_mae_db": 2.763
+   },
+   {
+    "root": 77,
+    "art": "normal",
+    "layer": 1,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 6.662,
+    "fixed_carrier_body_harmonic_delta_mae_db": 7.945
+   },
+   {
+    "root": 77,
+    "art": "normal",
+    "layer": 3,
+    "rr": 1,
+    "modeled_body_harmonic_delta_mae_db": 3.764,
+    "fixed_carrier_body_harmonic_delta_mae_db": 5.325
+   }
+  ]
+ },
+ "probes": [
+  {
+   "mode": "learned",
+   "seconds": 5.389,
+   "rms": 0.1982,
+   "peak": 0.9091
+  },
+  {
+   "mode": "sample-only control",
+   "seconds": 5.389,
+   "rms": 0.2022,
+   "peak": 0.8334
+  }
+ ],
+ "ablation_residual_relative_rms_per_note": [
+  0.4227,
+  0.1327,
+  0.0977,
+  0.1578,
+  0.3018,
+  0.4083,
+  0.2728,
+  0.1927,
+  0.2229
+ ],
+ "median_residual": 0.2229,
+ "endpoint_rate_and_length_checks": 216,
+ "mean_tested_mezzo_rms_720ms_sustains": 0.2094,
+ "weights_sha256": "c99e5abe128ed7eab9af288081c075ce22167d0e1dc98ad9427dce8cfb48fe3b"
+}

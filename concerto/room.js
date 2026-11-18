@@ -12,7 +12,17 @@
   const roman=['I','II','III'];
   let movements=[], maps=[], index=[], i=0, bar=0, cue=-1, pendingTime=null, audioSerial=0;
   let system=null, drawing=null, priorRect=null, activeEdge=null, loopIndex=null, dragging=false, ready=false, loadedMap=false, didFinish=false;
-  let playError=false;
+  let playError=false, wantFull=false, take=null, takeSerial=0, sourceKey='';
+  const editions={original:{name:'Original',map:'program.json'},learned:{name:'Learned',map:'expressive.json'}};
+  const fullPath=(k,n)=>'audio/'+(k==='learned'?'expressive-':'')+n+'.mp3';
+  const fetches=new Map();
+  const firstTake=()=>{try{return new URL(window.location.href).searchParams.get('take')==='original'?'original':'learned';}catch{return 'learned';}};
+  let desired=firstTake();
+  function shareTake(k){try{const url=new URL(window.location.href);url.searchParams.set('take',k);window.history.replaceState(window.history.state,'',url);}catch{/* An embedded or file-based edition may not permit history changes. */}}
+  const sample=$('sample');
+  let sampleScene=1,sampleTake='learned',sampleKey='',sampleSerial=0,samplePending=0,sampleWanted=false;
+  const sampleDuration=()=>Number.isFinite(sample.duration)&&sample.duration>0?sample.duration:0;
+  const sampleFraction=()=>samplePending!==null?samplePending:(sampleDuration()?clamp(sample.currentTime/sampleDuration(),0,1):0);
   // In the downloadable gallery each asset can have a local Blob URL.
   for(const el of document.querySelectorAll('[href],[src]')) {
     const attr=el.hasAttribute('src')?'src':'href', p=el.getAttribute(attr);
@@ -24,14 +34,14 @@
   }
   const json=async path=>{const r=await fetch(file(path));if(!r.ok) throw Error(path);return r.json();};
   const track=()=>movements[i], bars=()=>track().bars, chapters=()=>track().chapters;
-  const totalTime=()=>Number.isFinite(sound.duration)&&sound.duration>0?sound.duration:track().seconds;
+  const totalTime=()=>sound.readyState>=1&&Number.isFinite(sound.duration)&&sound.duration>0?sound.duration:track().seconds;
   const name=title=>String(title).replace(/^[IVX]+\s*[.:)\-]\s*/i,'');
   const say=(s)=>{if($('playerStatus').textContent!==s)$('playerStatus').textContent=s;};
   function locate(arr,key,value){
     let lo=0,hi=arr.length-1;while(lo<hi){let m=Math.ceil((lo+hi)/2);if(Number(arr[m][key])<=value+.00001)lo=m;else hi=m-1;}return lo;
   }
   function updateButtons(){
-    const live=!sound.paused&&!sound.ended;
+    const live=wantFull&&!sound.ended;
     $('play').querySelector('use').setAttribute('href',live?'#i-pause':'#i-play');
     $('play').setAttribute('aria-label',live?'Pause movement':'Play movement');
     $('heroPlay').querySelector('use').setAttribute('href',live?'#i-pause':'#i-play');
@@ -42,13 +52,15 @@
   function doPlay(){
     const token=audioSerial;
     if(didFinish){selectMovement(0,true,0);return;}
+    pauseSample();wantFull=true;updateButtons();
     if(sound.error) {const t=pendingTime??sound.currentTime;pendingTime=t;sound.load();}
     playError=false;say('');
     sound.play().catch(err=>{if(audioSerial!==token||err.name==='AbortError')return;
-      playError=true;say(err.name==='NotAllowedError'?'Press play to start the recording.':'This movement could not play. Try play again, or open its MP3 in The edition.');updateButtons();
+      wantFull=false;playError=true;say(err.name==='NotAllowedError'?'Press play to start the recording.':'This movement could not play. Try play again, or open its MP3 in The edition.');updateButtons();
     });
   }
-  function toggle(){if(sound.paused||sound.ended)doPlay();else sound.pause();}
+  function haltFull(){wantFull=false;sound.pause();updateButtons();}
+  function toggle(){if(wantFull&&!sound.ended)haltFull();else doPlay();}
   function setTime(t,manual=true){
     if(!ready)return;
     t=clamp(Number(t)||0,0,totalTime());didFinish=false;
@@ -66,9 +78,10 @@
       const num=dom('i',null,roman[j]),col=dom('span'),txt=dom('span','track-name',name(m.title)),sub=dom('span','track-sub',m.subtitle),d=dom('span','track-time',clock(m.seconds,true));num.setAttribute('aria-hidden','true');col.append(txt,sub);b.append(num,col,d);b.addEventListener('click',()=>selectMovement(j,true,0));tracks.append(b);
     });
   }
-  function selectMovement(j,play=false,t=0){
+  function selectMovement(j,play=false,t=0,keepLoop=null){
     if(!ready)return;
-    if(j!==i||!sound.getAttribute('src')){audioSerial++;sound.pause();i=j;pendingTime=t;sound.src=file('audio/'+(i+1)+'.mp3');sound.load();}
+    const key=fullPath(take,j+1);i=j;
+    if(sourceKey!==key){audioSerial++;haltFull();sourceKey=key;pendingTime=t;sound.src=file(key);sound.load();}
     clearLoop();playError=false;say('');didFinish=false;
     sound.playbackRate=Number($('speed').value);sound.defaultPlaybackRate=sound.playbackRate;
     document.querySelectorAll('#tracks button').forEach((b,k)=>b.setAttribute('aria-current',k===i?'true':'false'));
@@ -76,7 +89,7 @@
     chapter.replaceChildren();
     chapters().forEach((c,k)=>{const o=dom('option',null,'Bar '+c.bar+' · '+c.title);o.value=k;chapter.append(o);});
     bar=0;cue=-1;barNo.max=bars().length;$('barCount').textContent='of '+bars().length;system=null;drawing=null;
-    setTime(t);updateButtons();if(play)doPlay();
+    setTime(t);if(keepLoop!==null)setLoop(clamp(keepLoop,0,chapters().length-1));updateButtons();if(play)doPlay();
   }
   function renderScore(b,force=false){
     const rec=index[i]?.[b];if(!rec){if(loadedMap){stage.replaceChildren(dom('p',null,'The engraved strip is unavailable. Open the printed part above.'));}return;}
@@ -142,7 +155,7 @@
     refresh(t);
   }
   $('play').addEventListener('click',toggle);
-  $('heroPlay').addEventListener('click',e=>{if(!ready)return;e.preventDefault();toggle();document.getElementById('listening').scrollIntoView({behavior:reduced.matches?'auto':'smooth'});});
+  $('heroPlay').addEventListener('click',e=>{if(!ready&&!sourceKey)return;e.preventDefault();toggle();document.getElementById('listening').scrollIntoView({behavior:reduced.matches?'auto':'smooth'});});
   $('prevBar').addEventListener('click',()=>goBar(bar-1));$('nextBar').addEventListener('click',()=>goBar(bar+1));
   $('barForm').addEventListener('submit',e=>{e.preventDefault();goBar(barNo.valueAsNumber);});
   barNo.addEventListener('blur',()=>{if(ready&&!barNo.value)barNo.value=bar;});
@@ -153,27 +166,123 @@
   seek.addEventListener('input',()=>{if(!ready)return;const t=Number(seek.value);setTime(t);seek.style.setProperty('--pos',100*t/totalTime()+'%');});
   ['loadedmetadata','durationchange'].forEach(ev=>sound.addEventListener(ev,()=>{if(!ready)return;sound.playbackRate=Number($('speed').value);if(pendingTime!==null&&sound.readyState>=1)setTime(pendingTime,false);else if(pendingTime===null)refresh();}));
   ['timeupdate','seeked'].forEach(ev=>sound.addEventListener(ev,tick));
-  sound.addEventListener('playing',()=>{say('');updateButtons();});
-  sound.addEventListener('pause',updateButtons);
-  sound.addEventListener('error',()=>{if(!ready)return;say('The recording could not load. Retry play or use the MP3 links under The edition.');updateButtons();});
-  sound.addEventListener('ended',()=>{if(!ready)return;if(loopIndex!==null){goBar(chapters()[loopIndex].bar);doPlay();}else if(i<movements.length-1)selectMovement(i+1,true,0);else{didFinish=true;updateButtons();say('The concerto has ended.');}});
+  sound.addEventListener('play',()=>{if(!sound.paused){pauseSample();wantFull=true;}updateButtons();});
+  sound.addEventListener('playing',()=>{if(sound.paused)return;pauseSample();wantFull=true;say('');updateButtons();});
+  sound.addEventListener('pause',()=>{if(!ready&&sound.paused)wantFull=false;updateButtons();});
+  sound.addEventListener('error',()=>{if(!ready||!sound.error)return;wantFull=false;say('The recording could not load. Retry play or use the MP3 links under The edition.');updateButtons();});
+  sound.addEventListener('ended',()=>{if(!ready)return;if(loopIndex!==null){goBar(chapters()[loopIndex].bar);doPlay();}else if(i<movements.length-1)selectMovement(i+1,true,0);else{wantFull=false;didFinish=true;updateButtons();say('The concerto has ended.');}});
   let raf=0;new ResizeObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{if(ready&&bar)renderScore(bar);});}).observe(stage);
   function buildMap(data){maps=data;index=maps.map(systems=>{const by=[];for(const s of systems){for(const b of s.bars)by[b.b]={s,b};}return by;});loadedMap=true;if(ready)renderScore(bar||1,true);}
-  // The player remains usable if only the score-map request fails.
-  json('program.json').then(data=>{
-    movements=data.movements;if(!movements?.length||!movements.every(m=>m.bars?.length&&m.chapters?.length))throw Error('programme');
-    const sum=movements.reduce((a,m)=>a+Number(m.seconds),0);$('heroTime').textContent='Three movements · '+clock(sum,true);
-    displayTracks();ready=true;sound.controls=false;sound.hidden=true;
-    document.querySelectorAll('.js-only, #barTools').forEach(el=>el.hidden=false);
-    for(const el of document.querySelectorAll('.cue-link')){
-      const m=Number(el.dataset.m),c=movements[m].chapters.find(ch=>ch.title===el.dataset.cue);if(!c)continue;el.hidden=false;
-      el.addEventListener('click',()=>{selectMovement(m,true,movements[m].bars[c.bar-1].t);$('listening').scrollIntoView({behavior:reduced.matches?'auto':'smooth'});});
+  function setSampleUI(){
+    $('abPlay').querySelector('use').setAttribute('href',sampleWanted?'#i-pause':'#i-play');
+    $('abPlay').querySelector('span').textContent=sampleWanted?'Pause excerpt':'Play excerpt';
+    $('abOriginal').setAttribute('aria-pressed',String(sampleTake==='original'));$('abLearned').setAttribute('aria-pressed',String(sampleTake==='learned'));
+    const f=sampleFraction(),d=sampleDuration();$('abSeek').value=f;$('abSeek').style.setProperty('--pos',(f*100)+'%');
+    $('abTime').textContent=d?clock(f*d)+' / '+clock(d,true):'0:00';$('abSeek').setAttribute('aria-valuetext',d?clock(f*d)+' of '+clock(d,true):Math.round(f*100)+' percent');
+  }
+  function pauseSample(){sampleWanted=false;if(!sample.paused)sample.pause();setSampleUI();}
+  function sampleTo(f){
+    samplePending=clamp(Number(f)||0,0,1);
+    if(sample.readyState>=1&&sampleDuration()){try{sample.currentTime=samplePending*sampleDuration();samplePending=null;}catch{}}
+    setSampleUI();
+  }
+  function prepareSample(){
+    const key='audio/ab-'+sampleScene+'-'+(sampleTake==='learned'?'expressive':'original')+'.mp3';
+    if(key===sampleKey)return false;
+    ++sampleSerial;sampleKey=key;sample.preload='metadata';sample.src=file(key);sample.load();return true;
+  }
+  function playSample(){
+    haltFull();
+    if(sample.ended&&samplePending===null)samplePending=0;
+    const fraction=sampleFraction();
+    prepareSample();if(sample.error){++sampleSerial;samplePending=fraction;sample.load();}
+    if(samplePending!==null)sampleTo(samplePending);
+    const token=sampleSerial;sampleWanted=true;setSampleUI();$('abStatus').textContent='';
+    sample.play().catch(err=>{if(token!==sampleSerial||err.name==='AbortError')return;sampleWanted=false;setSampleUI();$('abStatus').textContent=err.name==='NotAllowedError'?'Press play to hear the excerpt.':'This excerpt could not load. Retry play, or compare the full performances above.';});
+  }
+  function configureSample(scene,k){
+    if(scene===sampleScene&&k===sampleTake)return;
+    const resume=sampleWanted,position=scene===sampleScene?sampleFraction():0;
+    sampleScene=scene;sampleTake=k;pauseSample();samplePending=position;prepareSample();
+    $('abStatus').textContent='';sampleTo(position);if(resume)playSample();
+  }
+  $('abPlay').addEventListener('click',()=>{if(sampleWanted)pauseSample();else playSample();});
+  $('abOriginal').addEventListener('click',()=>configureSample(sampleScene,'original'));$('abLearned').addEventListener('click',()=>configureSample(sampleScene,'learned'));
+  $('scene').addEventListener('change',()=>configureSample(Number($('scene').value),sampleTake));
+  $('abSeek').addEventListener('input',()=>{const f=Number($('abSeek').value);prepareSample();sampleTo(f);});
+  ['loadedmetadata','durationchange'].forEach(ev=>sample.addEventListener(ev,()=>{if(sample.readyState>=1&&samplePending!==null)sampleTo(samplePending);else setSampleUI();}));
+  ['timeupdate','seeked'].forEach(ev=>sample.addEventListener(ev,setSampleUI));
+  sample.addEventListener('playing',()=>{if(!sample.paused){haltFull();sampleWanted=true;setSampleUI();}});
+  sample.addEventListener('ended',()=>{sampleWanted=false;setSampleUI();$('abStatus').textContent='Excerpt ended. The full concerto is still at your saved position.';});
+  sample.addEventListener('error',()=>{if(!sample.error)return;sampleWanted=false;setSampleUI();$('abStatus').textContent='This excerpt could not load. Choose another take or try play again.';});
+  function getProgramme(k){
+    if(!fetches.has(k)){
+      const req=json(editions[k].map).then(data=>{
+        const ms=data.movements;if(!Array.isArray(ms)||ms.length!==3||!ms.every(m=>Number.isFinite(m.seconds)&&m.seconds>0&&m.bars?.length&&m.chapters?.length&&m.bars.every((b,n)=>Number.isFinite(b.t)&&(n===0||b.t>m.bars[n-1].t))))throw Error('Invalid performance timing');
+        return ms;
+      }).catch(err=>{fetches.delete(k);throw err;});fetches.set(k,req);
     }
-    selectMovement(0);
+    return fetches.get(k);
+  }
+  function mapPosition(t,from,to){
+    const old=from.bars,nu=to.bars,b=locate(old,'t',t),k=clamp(b,0,nu.length-1);
+    const start=old[b].t,end=old[b+1]?.t??from.seconds,span=end-start;
+    const newStart=nu[k].t,newEnd=nu[k+1]?.t??to.seconds;
+    const usable=g=>Array.isArray(g)&&g.length>1&&g[0]===0&&g.every((v,j)=>Number.isFinite(v)&&(!j||v>g[j-1]));
+    const g0=old[b].grid,g1=nu[k].grid;
+    let beatFraction=clamp((t-start)/Math.max(.001,span),0,1);
+    if(usable(g0)){
+      const elapsed=clamp(t-start,0,g0.at(-1));let n=0;while(n<g0.length-2&&g0[n+1]<=elapsed)n++;
+      beatFraction=(n+(elapsed-g0[n])/(g0[n+1]-g0[n]))/(g0.length-1);
+    }
+    if(usable(g1)){
+      const nth=clamp(beatFraction,0,1)*(g1.length-1),n=Math.min(Math.floor(nth),g1.length-2);
+      return newStart+g1[n]+(nth-n)*(g1[n+1]-g1[n]);
+    }
+    return newStart+beatFraction*(newEnd-newStart);
+  }
+  function takeButtons(k){$('takeOriginal').setAttribute('aria-pressed',String(k==='original'));$('takeLearned').setAttribute('aria-pressed',String(k==='learned'));}
+  function initializeControls(){
+    sound.controls=false;sound.hidden=true;document.querySelectorAll('.js-only, #barTools').forEach(el=>el.hidden=false);
+    for(const el of document.querySelectorAll('.cue-link')){
+      const n=Number(el.dataset.m);if(!movements[n].chapters.some(ch=>ch.title===el.dataset.cue))continue;
+      el.hidden=false;el.addEventListener('click',()=>{const c=movements[n].chapters.find(ch=>ch.title===el.dataset.cue);if(!c)return;selectMovement(n,true,movements[n].bars[c.bar-1].t);$('listening').scrollIntoView({behavior:reduced.matches?'auto':'smooth'});});
+    }
     json('edition/score-map.json').then(buildMap).catch(()=>{loadedMap=true;renderScore(bar||1);});
-  }).catch(()=>{
-    $('scoreStage').replaceChildren(dom('p',null,'The interactive programme could not load. Use the movement links above and the PDF part.'));
-    $('heroVerb').textContent='Listen to the concerto';
-    say('Choose a movement above to open its recording.');
-  });
+  }
+  async function chooseTake(k,{share=true,fallback=true}={}){
+    const serial=++takeSerial;desired=k;takeButtons(k);
+    if(ready&&take===k){$('takeNote').textContent='Switch takes without losing your place.';if(share)shareTake(k);return;}
+    $('takeNote').textContent='Loading '+editions[k].name.toLowerCase()+' performance…';
+    if(!ready){
+      const key=fullPath(k,i+1);if(sourceKey!==key){
+        const resume=wantFull&&!sound.ended;audioSerial++;if(sourceKey)haltFull();sourceKey=key;pendingTime=null;
+        if(sound.getAttribute('src')!==file(key))sound.src=file(key);
+        if(resume)doPlay();
+      }
+      // Slow or blocked timing data need not prevent listening from the native links.
+      [...$('tracks').querySelectorAll('a')].forEach((a,n)=>a.href=file(fullPath(k,n+1)));
+    }
+    try{
+      const ms=await getProgramme(k);if(serial!==takeSerial)return;
+      const wasReady=ready,t=pendingTime??sound.currentTime??0,resume=wantFull||(!sound.paused&&!sound.ended),keep=loopIndex,ended=didFinish;
+      const position=wasReady?mapPosition(t,track(),ms[i]):t;movements=ms;take=k;ready=true;
+      const sum=movements.reduce((a,m)=>a+m.seconds,0);$('heroTime').textContent='Three movements · '+clock(sum,true);
+      displayTracks();if(!wasReady)initializeControls();
+      selectMovement(i,resume&&!ended,position,keep);didFinish=ended;updateButtons();takeButtons(k);if(share)shareTake(k);
+      $('takeNote').textContent=wasReady?'Same passage, '+editions[k].name.toLowerCase()+' performance.':'Switch takes without losing your place.';
+    }catch{
+      if(serial!==takeSerial)return;
+      if(ready){desired=take;takeButtons(take);$('takeNote').textContent=editions[k].name+' timing could not load. The '+editions[take].name.toLowerCase()+' take is still selected. Try switching again.';}
+      else if(fallback){
+        const alternate=k==='learned'?'original':'learned';await chooseTake(alternate,{share:false,fallback:false});
+        if(ready&&take===alternate&&desired===alternate)$('takeNote').textContent=editions[k].name+' timing is unavailable. Showing the '+editions[alternate].name.toLowerCase()+' performance.';
+      }else{
+        $('scoreStage').replaceChildren(dom('p',null,'The timing maps could not load. Use the movement links above and the printed PDF part.'));
+        $('takeNote').textContent='Timing unavailable. Choose either take to retry.';say('Choose a movement above to open its recording.');
+      }
+    }
+  }
+  $('takeLearned').addEventListener('click',()=>chooseTake('learned'));$('takeOriginal').addEventListener('click',()=>chooseTake('original'));
+  $('takePanel').hidden=false;$('comparison').hidden=false;setSampleUI();chooseTake(desired,{share:false});
 })();
