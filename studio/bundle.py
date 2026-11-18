@@ -1,4 +1,4 @@
-"""Build the complete offline exhibition, including its 3D game.
+"""Build the complete offline exhibition, including the 3D game and the generative orchestra.
 Pure Python 3; no external dependencies: python studio/bundle.py observatory.html
 """
 import base64,json,re,sys
@@ -17,10 +17,13 @@ def build(read,names):
     game=game.replace('<link rel="stylesheet" href="game.css">','<style>'+css+'</style>')
     game=game.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"').replace('<script src="renderer.js">','<script>window.SABLE_SEAL='+json.dumps(uri('sable/assets/seal.png'))+';</script><script src="renderer.js">')
     game=embed(game,'sable/')
+    concert=text('orchestra/index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('orchestra/style.css')+'</style>')
+    concert=embed(concert.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"'),'orchestra/')
     assets={n:uri(n) for n in names if n.startswith('assets/') and Path(n).suffix in {'.jpg','.png','.webp'}}
     h=text('index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('style.css')+'</style>')
-    h=h.replace('src="assets/sable-cover.jpg"','src="'+assets.pop('assets/sable-cover.jpg')+'"')
-    h=h.replace('window.ASTRA=[];', 'window.ASTRA=[];window.ASTRA_ASSETS='+json.dumps(assets,separators=(',',':'))+';window.SABLE_OFFLINE_HTML='+code(json.dumps(game))+';')
+    for name in ['assets/sable-cover.jpg','assets/orchestra-cover.jpg']:
+        h=h.replace('src="'+name+'"','src="'+assets[name]+'"')
+    h=h.replace('window.ASTRA=[];', 'window.ASTRA=[];window.ASTRA_ASSETS='+json.dumps(assets,separators=(',',':'))+';window.SABLE_OFFLINE_HTML='+code(json.dumps(game))+';window.ORCHESTRA_OFFLINE_HTML='+code(json.dumps(concert))+';')
     return embed(h,'')
 if __name__=='__main__':
     root=Path(__file__).resolve().parents[1]

@@ -2,7 +2,13 @@
 
 **[Open the interactive exhibition](https://isiliconx.github.io/astra6.2/)**
 
-A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Every instrument has controls, a short explanation, pause/restart and PNG frame export.
+A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Most canvas instruments offer pause, restart and PNG export. The two standalone exhibits have their own controls and output formats.
+
+## New musical form: [The Unwritten Symphony](https://isiliconx.github.io/astra6.2/orchestra/)
+
+A **Convergence** develops one seed gesture from unmetered sound through key, pulse, harmony and melody. In the final movement, a fitted symbolic model generates an original 16-bar chamber score. Conduct the run, switch scenes, mute sections on the seating plan, read the moving score, or download a multitrack MIDI and its reproducible run data.
+
+[Music, model and verification](orchestra/) · [Play the default seed](https://isiliconx.github.io/astra6.2/orchestra/?seed=1784)
 
 ## Featured game: [Sable Relay](https://isiliconx.github.io/astra6.2/sable/)
 
