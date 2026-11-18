@@ -15,7 +15,7 @@
   let playError=false, wantFull=false, take=null, takeSerial=0, sourceKey='';
   const editions={original:{name:'Original',map:'program.json'},learned:{name:'Learned',map:'expressive.json'}};
   const fullPath=(k,n)=>'audio/'+(k==='learned'?'expressive-':'')+n+'.mp3';
-  const fetches=new Map();
+  const fetches=new Map(), programmes=new Map();
   const firstTake=()=>{try{return new URL(window.location.href).searchParams.get('take')==='original'?'original':'learned';}catch{return 'learned';}};
   let desired=firstTake();
   function shareTake(k){try{const url=new URL(window.location.href);url.searchParams.set('take',k);window.history.replaceState(window.history.state,'',url);}catch{/* An embedded or file-based edition may not permit history changes. */}}
@@ -200,9 +200,16 @@
     const token=sampleSerial;sampleWanted=true;setSampleUI();$('abStatus').textContent='';
     sample.play().catch(err=>{if(token!==sampleSerial||err.name==='AbortError')return;sampleWanted=false;setSampleUI();$('abStatus').textContent=err.name==='NotAllowedError'?'Press play to hear the excerpt.':'This excerpt could not load. Retry play, or compare the full performances above.';});
   }
+  function clipPosition(f,scene,fromTake,toTake){
+    const from=programmes.get(fromTake)?.[scene-1],to=programmes.get(toTake)?.[scene-1];
+    if(!from||!to||f<=0||f>=1)return f;
+    const [start,end]=[[40,48],[0,4],[0,8]][scene-1];
+    const a=from.bars[start].t, d=from.bars[end].t-a, b=to.bars[start].t, e=to.bars[end].t-b;
+    return clamp((mapPosition(a+d*f,from,to)-b)/e,0,1);
+  }
   function configureSample(scene,k){
     if(scene===sampleScene&&k===sampleTake)return;
-    const resume=sampleWanted,position=scene===sampleScene?sampleFraction():0;
+    const resume=sampleWanted,position=scene===sampleScene?clipPosition(sampleFraction(),scene,sampleTake,k):0;
     sampleScene=scene;sampleTake=k;pauseSample();samplePending=position;prepareSample();
     $('abStatus').textContent='';sampleTo(position);if(resume)playSample();
   }
@@ -219,7 +226,7 @@
     if(!fetches.has(k)){
       const req=json(editions[k].map).then(data=>{
         const ms=data.movements;if(!Array.isArray(ms)||ms.length!==3||!ms.every(m=>Number.isFinite(m.seconds)&&m.seconds>0&&m.bars?.length&&m.chapters?.length&&m.bars.every((b,n)=>Number.isFinite(b.t)&&(n===0||b.t>m.bars[n-1].t))))throw Error('Invalid performance timing');
-        return ms;
+        programmes.set(k,ms);return ms;
       }).catch(err=>{fetches.delete(k);throw err;});fetches.set(k,req);
     }
     return fetches.get(k);
@@ -285,4 +292,6 @@
   }
   $('takeLearned').addEventListener('click',()=>chooseTake('learned'));$('takeOriginal').addEventListener('click',()=>chooseTake('original'));
   $('takePanel').hidden=false;$('comparison').hidden=false;setSampleUI();chooseTake(desired,{share:false});
+  // Two compact score maps enable the same eighth-note transfer in the excerpt player.
+  getProgramme(desired==='learned'?'original':'learned').catch(()=>{});
 })();
