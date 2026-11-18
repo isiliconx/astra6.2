@@ -2,7 +2,17 @@
 
 **[Open the interactive exhibition](https://isiliconx.github.io/astra6.2/)**
 
-A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Most canvas instruments offer pause, restart and PNG export. The two standalone exhibits have their own controls and output formats.
+A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Most canvas instruments offer pause, restart and PNG export. The standalone exhibits have their own controls and output formats.
+
+## New collection: The Five Proofs
+
+Five ways to test a beautiful idea instead of taking it on faith:
+
+- **[The City That Fits in a Book](https://isiliconx.github.io/astra6.2/paper-city/)**: Open a paper night market, drive its tram, and print the same mechanism at home. [Method and tests](paper-city/README.md).
+- **[The Kiln That Sings](https://isiliconx.github.io/astra6.2/kiln/)**: Throw three ceramic voices into shape and strike a chord you can see. [Method and tests](kiln/README.md).
+- **[The Impossible Alphabet](https://isiliconx.github.io/astra6.2/alphabet/)**: Turn one bronze solid until it reads B, E, or a bird. Take home the mesh. [Method and tests](alphabet/README.md).
+- **[The Night We Found a Planet](https://isiliconx.github.io/astra6.2/planet/)**: Spend three nights at a telescope and bet on the transit neither model has seen. [Method and tests](planet/README.md).
+- **[The Wrong Camera](https://isiliconx.github.io/astra6.2/wrong-camera/)**: Two editors, one missing red glove, and twenty-five seconds neither can change. [Method and tests](wrong-camera/README.md).
 
 ## New musical form: [The Unwritten Symphony](https://isiliconx.github.io/astra6.2/orchestra/)
 

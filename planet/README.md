@@ -1,0 +1,6 @@
+# The Night We Found a Planet
+Three observing windows to choose, then one prospective forecast. All stars and readings are synthetic. Two periodic trapezoids (period ratio 3:2) agree on two historical transits; the user can spend time on either useful or useless windows. Three distinct chronological rounds offer candidate windows with different predicted separation and noise. The fourth window is always disjoint from the campaign and diagnostic; the candidate likelihood is frozen before revealing its noisy exposure.
+
+The true event for Brier scoring means model flux at mid-window drops by over 40% of the transit depth. A sealed forecast scores against simulated truth rather than whether a noisy sample crosses a threshold. Each of 39 exposures per visit has an independent Gaussian error with the displayed standard deviation. The known baseline, period candidates, depth and duration are deliberate simplifications. No external data or real planetary detection is claimed.
+
+Run `node planet/model.test.cjs` from the repo root to exercise 512 hidden synthetic systems, non-discriminating vs. strongest-separation scheduling, Brier loss on the sealed fourth window, determinism and chronological ordering.

@@ -1,0 +1,4 @@
+# The Wrong Camera
+A procedural silent puppet short: 25 seconds at Finch Street station, two six-shot edits and one uncut witness. Time is shared across edits. The red glove is carried, dropped, picked up and returned by the same deterministic blocking track. Both stories use the same actors, garments, props, lighting, animation and timing. Only camera coordinates, field of view and cuts change. The lens trimmer changes framing without modifying the action. The stage is made from original 3D geometry projected and shaded on a 2D canvas; no video, dialogue or music is used.
+
+Run `node wrong-camera/scene.test.cjs` from the repository root. It samples all 601 frame boundaries, compares actor state across three cameras, checks glove handoff continuity at four change points and measures framing differences between cuts. These tests address continuity and composition, **not** audience interpretation. No blind viewer study has been run.

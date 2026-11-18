@@ -1,4 +1,4 @@
-"""Build the complete offline exhibition, including the 3D game and the generative orchestra.
+"""Build the complete offline exhibition, including all standalone works, the printable pop-up and the generative orchestra.
 Pure Python 3; no external dependencies: python studio/bundle.py observatory.html
 """
 import base64,json,re,sys
@@ -19,11 +19,31 @@ def build(read,names):
     game=embed(game,'sable/')
     concert=text('orchestra/index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('orchestra/style.css')+'</style>')
     concert=embed(concert.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"'),'orchestra/')
+    # New standalone works are HTML documents; use blob links, not top-level data navigation.
+    def standalone(folder, page='index.html'):
+        h=text(folder+'/'+page).replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"')
+        href='<link rel="stylesheet" href="style.css">'
+        if href in h: h=h.replace(href,'<style>'+text(folder+'/style.css')+'</style>')
+        # Inline deferred head scripts at the bottom, preserving source order and real DOM readiness.
+        deferred=re.findall(r'<script defer src="([\w./-]+)"></script>',h)
+        h=re.sub(r'<script defer src="[\w./-]+"></script>','',h)
+        if deferred:h=h.replace('</body>',''.join('<script src="'+n+'"></script>' for n in deferred)+'</body>')
+        return embed(h,folder+'/')
+    standalone_ids={'the-city-that-fits-in-a-book':'paper-city','the-kiln-that-sings':'kiln','the-impossible-alphabet':'alphabet','the-night-we-found-a-planet':'planet','the-wrong-camera':'wrong-camera'}
+    extra={i:standalone(d) for i,d in standalone_ids.items()}
+    pattern=standalone('paper-city','pattern.html').replace('href="index.html"','href="https://isiliconx.github.io/astra6.2/paper-city/"')
+    pattern=pattern.replace('href="field-pattern.pdf" download','href="data:application/pdf;base64,'+base64.b64encode(read('paper-city/field-pattern.pdf')).decode()+'" download="field-pattern.pdf"')
+    # Base64 here deliberately avoids nested script terminators in the pattern-within-market-within-gallery.
+    pp=base64.b64encode(pattern.encode('utf-8')).decode('ascii')
+    art="""<script>document.querySelector('a[href=\"pattern.html\"]').href=URL.createObjectURL(new Blob([Uint8Array.from(atob(\""""+pp+"""\"),c=>c.charCodeAt(0))],{type:'text/html'}));</script>"""
+    extra['the-city-that-fits-in-a-book']=extra['the-city-that-fits-in-a-book'].replace('</body>',art+'</body>')
     assets={n:uri(n) for n in names if n.startswith('assets/') and Path(n).suffix in {'.jpg','.png','.webp'}}
     h=text('index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('style.css')+'</style>')
     for name in ['assets/sable-cover.jpg','assets/orchestra-cover.jpg']:
         h=h.replace('src="'+name+'"','src="'+assets[name]+'"')
-    h=h.replace('window.ASTRA=[];', 'window.ASTRA=[];window.ASTRA_ASSETS='+json.dumps(assets,separators=(',',':'))+';window.SABLE_OFFLINE_HTML='+code(json.dumps(game))+';window.ORCHESTRA_OFFLINE_HTML='+code(json.dumps(concert))+';')
+    for n in ['assets/plates/the-city-that-fits-in-a-book.webp']:
+        h=h.replace('src="'+n+'"','src="'+assets[n]+'"')
+    h=h.replace('window.ASTRA=[];', 'window.ASTRA=[];window.ASTRA_ASSETS='+json.dumps(assets,separators=(',',':'))+';window.SABLE_OFFLINE_HTML='+code(json.dumps(game))+';window.ORCHESTRA_OFFLINE_HTML='+code(json.dumps(concert))+';window.ASTRA_STANDALONE='+code(json.dumps(extra,separators=(',',':')))+';')
     return embed(h,'')
 if __name__=='__main__':
     root=Path(__file__).resolve().parents[1]
