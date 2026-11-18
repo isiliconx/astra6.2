@@ -1,0 +1,2 @@
+/* Astra Observatory / performance editions */
+window.ASTRA.push({id:'the-other-shore',title:'The Other Shore',category:'Sound',projectUrl:'concerto/',description:'An imagined second clarinet concerto. Listen to three original movements while following the printed solo part.',method:'Eight independently notated parts, 696 measures, a sampled chamber orchestra, and a printable conductor score and A-clarinet part.',gesture:'Enter the listening room.',params:[]});

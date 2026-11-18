@@ -4,6 +4,9 @@
 
 A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Most canvas instruments offer pause, restart and PNG export. The standalone exhibits have their own controls and output formats.
 
+## Performing edition: [The Other Shore](https://isiliconx.github.io/astra6.2/concerto/)
+An original, three-movement A-clarinet concerto by Astra, imagined in dialogue with Mozart's K. 622, not a work by Mozart. Listen to the 26-minute sampled performance, follow the solo part by bar and download the [conductor score](concerto/edition/conductor-score.pdf), [A-clarinet part](concerto/edition/clarinet-in-a.pdf), [MusicXML](concerto/edition/editable-scores.zip), and [MIDI](concerto/edition/performance-midi.zip). [Performance notes and credits](concerto/README.md).
+
 ## New collection: The Five Proofs
 
 Five ways to test a beautiful idea instead of taking it on faith:

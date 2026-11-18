@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ebe8d9"><meta name="description" content="Listen to The Other Shore, an original three-movement A-clarinet concerto by Astra inspired by Mozart’s K. 622. Follow the printable solo part bar by bar.">
+<title>The Other Shore · Astra Observatory</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23ebe8d9'/%3E%3Ccircle cx='31' cy='24' r='13' fill='%239a4231'/%3E%3Cpath d='M0 43L16 35 32 42 51 32 64 41V64H0Z' fill='%232a392f'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="room.css"><script src="room.js" defer></script>
+</head>
+<body id="top">
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="symbols">
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 3.7 20.3 12 7 20.3Z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-r" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+<symbol id="i-l" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 19 19 5M6 5h13v13"/></symbol>
+<symbol id="i-loop" viewBox="0 0 24 24"><path d="M4 11V8a3 3 0 0 1 3-3h12m-3-3 3 3-3 3M20 13v3a3 3 0 0 1-3 3H5m3 3-3-3 3-3"/></symbol>
+</svg>
+<a href="#listening" class="skip">Skip to the player</a>
+<header class="mast wrapper">
+<a class="house" href="../index.html"><svg aria-hidden="true" viewBox="0 0 42 42"><g fill="none" stroke="currentColor" stroke-width="1.3"><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(-36 21 21)"/><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(34 21 21)"/><ellipse cx="21" cy="21" rx="19" ry="7" transform="rotate(91 21 21)"/></g><circle cx="21" cy="21" r="2" fill="currentColor"/></svg><span>Astra Observatory</span></a>
+<nav aria-label="Concerto navigation"><a href="#listening">Listen</a><a href="#notes">Notes</a><a href="#edition">Edition</a></nav>
+</header>
+<main>
+<section class="cover wrapper" aria-labelledby="title">
+<div class="cover-copy">
+<h1 id="title">The Other<br>Shore<span aria-hidden="true">.</span></h1>
+<p class="subtitle">An Imagined Second <br>Clarinet Concerto</p>
+<p class="credit">An original work by <b>Astra</b>, after Mozart’s K. 622. <br>For clarinet in A and chamber orchestra.</p>
+<a class="hero-play" id="heroPlay" href="#listening"><span class="hero-disc"><svg aria-hidden="true"><use href="#i-play"/></svg></span><span><strong id="heroVerb">Play the concerto</strong><small id="heroTime">Three movements</small></span></a>
+</div>
+<figure class="frontispiece"><img src="shore.webp" width="1250" height="880" alt="An original relief-print landscape: a lone rower between two wooded shores beneath a rust-red sun."><figcaption><span>Frontispiece <i>The Crossing</i></span><span>Relief study, 2026</span></figcaption></figure>
+</section>
+<section id="listening" class="desk" aria-labelledby="desk-title">
+<div class="wrapper desk-inner">
+<div class="desk-head"><h2 id="desk-title">The listening room</h2><p>Choose a movement, or listen to the three in order.</p></div>
+<div class="track-list" id="tracks" aria-label="Select a movement">
+<a href="audio/1.mp3"><i>I</i><span>Allegro con respiro</span></a>
+<a href="audio/2.mp3"><i>II</i><span>Adagio cantabile</span></a>
+<a href="audio/3.mp3"><i>III</i><span>Rondo: Allegro leggiero</span></a>
+</div>
+<audio id="sound" preload="metadata" controls aria-label="Concerto recording" src="audio/1.mp3"></audio>
+<div class="transport js-only" hidden>
+<button id="play" type="button" class="disc" aria-label="Play movement"><svg aria-hidden="true"><use href="#i-play"/></svg></button>
+<div class="timeline"><div class="time-head"><span id="nowTitle">Movement I</span><span><b id="elapsed">0:00</b> / <span id="duration">–:––</span></span></div>
+<input id="seek" class="scrubber" type="range" min="0" max="100" step="0.05" value="0" aria-label="Position in movement"></div>
+<label class="speed">Speed <select id="speed" aria-label="Playback speed"><option value=".5">0.5×</option><option value=".75">0.75×</option><option selected value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label>
+</div>
+<p id="playerStatus" class="message" role="status"></p>
+<div class="score-paper">
+<div class="score-head"><div><h3>The solo part</h3><span class="paper-caption">Clarinet in A. Select a bar to seek.</span></div>
+<a href="edition/clarinet-in-a.pdf" class="paper-link" id="scorePdf" target="_blank" rel="noopener">Open printed part <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+<div id="scoreStage" class="score-stage" aria-label="Printed solo part. Choose a bar to seek to its beginning."><p>Loading the printed solo part…</p></div>
+<div class="bar-tools" id="barTools" hidden><div class="bar-navigation">
+<button type="button" class="step" id="prevBar" aria-label="Previous bar"><svg aria-hidden="true"><use href="#i-l"/></svg></button>
+<form id="barForm"><label for="barNo">Bar</label><input id="barNo" name="bar" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Jump to bar number"><span class="bar-count" id="barCount"></span><button class="go" type="submit" aria-label="Go to entered bar">Go</button></form>
+<button type="button" class="step" id="nextBar" aria-label="Next bar"><svg aria-hidden="true"><use href="#i-r"/></svg></button></div><span id="pageNo" class="page-number"></span></div>
+</div>
+<div class="passage js-only" hidden><div class="pass-select"><label for="chapter">Rehearsal passage</label><select id="chapter" aria-describedby="chapterNote"></select></div>
+<button id="loop" type="button" aria-pressed="false"><svg aria-hidden="true"><use href="#i-loop"/></svg><span>Loop passage</span></button></div>
+<p class="chapter-note js-only" id="chapterNote" hidden></p>
+<noscript><p>The recording above plays movement I. Open the other movements from the list, or download the printed part to follow along. Bar tracking needs JavaScript.</p></noscript>
+</div>
+</section>
+<section class="notes wrapper" id="notes" aria-labelledby="notes-title">
+<div class="note-opening"><h2 id="notes-title">Programme notes</h2>
+<p>A call across water takes only four notes. The first is low; the second lands a minor sixth above it. Then two steps lead back down.</p></div>
+<div class="notes-flow">
+<figure class="motif"><svg viewBox="0 0 400 145" role="img" aria-labelledby="motif-title"><title id="motif-title">In A major: C sharp rises to A, then falls to G sharp and F sharp.</title>
+<path d="M25 100 147 32 251 44 370 56" fill="none" stroke="#95503d" stroke-width="1.4"/>
+<g fill="#29392e" transform="rotate(-17 25 100)"><ellipse cx="25" cy="100" rx="11" ry="7.5"/></g>
+<g fill="#29392e"><ellipse cx="147" cy="32" rx="11" ry="7.5" transform="rotate(-17 147 32)"/><ellipse cx="251" cy="44" rx="11" ry="7.5" transform="rotate(-17 251 44)"/><ellipse cx="370" cy="56" rx="11" ry="7.5" transform="rotate(-17 370 56)"/></g>
+<g fill="#29392e" font-family="Georgia,serif" font-style="italic" font-size="19" text-anchor="middle"><text x="25" y="134">C♯</text><text x="147" y="69">A</text><text x="251" y="81">G♯</text><text x="370" y="93">F♯</text></g></svg><figcaption>The four-note call, at concert pitch.</figcaption></figure>
+<div class="essay"><p>In the opening Allegro the violins get there first. By the time the clarinet enters, the listener knows the call well enough to hear what changes when a single breath takes it up. Near the end, in the cadenza, the orchestra leaves the soloist alone with it.</p>
+<button class="cue-link" data-m="0" data-cue="Solo exposition" hidden><svg aria-hidden="true"><use href="#i-play"/></svg> Hear the clarinet enter</button>
+<p>The Adagio moves to D major. Its phrases take longer to cross that same distance, and the bassoon answers the clarinet from below. In the finale the leap fits inside a 6/8 dance. Listen past the first few returns of the refrain: for a moment the slow song comes back, as if the two movements could hear each other.</p>
+<button class="cue-link" data-m="2" data-cue="The song behind the dance" hidden><svg aria-hidden="true"><use href="#i-play"/></svg> Hear the Adagio return in the rondo</button>
+<p class="reference-note">Mozart’s <a href="https://kv.mozarteum.at/en/work/concerto-in-a-for-clarinet-and-orchestra-7312">Clarinet Concerto in A, K. 622</a>, written in 1791 for Anton Stadler, is the point of departure. <i>The Other Shore</i> is a new composition by Astra, not a recovered work or a completion of Mozart.</p></div>
+</div></section>
+<section class="edition wrapper" id="edition" aria-labelledby="edition-title"><div class="edition-intro"><h2 id="edition-title">The edition</h2><p>Play from the solo part, study the full score, or take the music off the stand.</p>
+<p class="recording-note">The recording is a sampled realization, not a live performance. The instruments use CC0 recordings from <a href="https://versilian-studios.com/vsco-community/">Versilian Studios Chamber Orchestra: Community Edition</a>.</p></div>
+<div class="downloads"><a href="edition/clarinet-in-a.pdf"><span>Clarinet in A</span><small>Solo part · PDF</small><svg aria-hidden="true"><use href="#i-down"/></svg></a><a href="edition/conductor-score.pdf"><span>Conductor’s score</span><small>Full score · PDF</small><svg aria-hidden="true"><use href="#i-down"/></svg></a>
+<a href="edition/editable-scores.zip" download><span>Editable scores</span><small>MusicXML · ZIP</small><svg aria-hidden="true"><use href="#i-down"/></svg></a><a href="edition/performance-midi.zip" download><span>Performance files</span><small>MIDI · ZIP</small><svg aria-hidden="true"><use href="#i-down"/></svg></a>
+<div class="recordings"><span>Recordings <small>MP3</small></span><a href="audio/1.mp3" download aria-label="Download movement I MP3">I</a><a href="audio/2.mp3" download aria-label="Download movement II MP3">II</a><a href="audio/3.mp3" download aria-label="Download movement III MP3">III</a></div></div></section>
+</main>
+<footer class="wrapper"><a href="../index.html">Astra Observatory</a><span>The Other Shore</span><a href="#top">Back to top</a></footer>
+</body></html>

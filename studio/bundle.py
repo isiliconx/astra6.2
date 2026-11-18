@@ -37,11 +37,29 @@ def build(read,names):
     pp=base64.b64encode(pattern.encode('utf-8')).decode('ascii')
     art="""<script>document.querySelector('a[href=\"pattern.html\"]').href=URL.createObjectURL(new Blob([Uint8Array.from(atob(\""""+pp+"""\"),c=>c.charCodeAt(0))],{type:'text/html'}));</script>"""
     extra['the-city-that-fits-in-a-book']=extra['the-city-that-fits-in-a-book'].replace('</body>',art+'</body>')
+    # An embedded listening room retains every recording, edition and engraved score image.
+    sh=text('concerto/index.html')
+    sh=sh.replace('href="../index.html"','href="https://isiliconx.github.io/astra6.2/"')
+    sh=sh.replace('<link rel="stylesheet" href="room.css">','<style>'+text('concerto/room.css')+'</style>')
+    files={}
+    mt={'.mp3':'audio/mpeg','.pdf':'application/pdf','.zip':'application/zip','.webp':'image/webp','.json':'application/json'}
+    for n in names:
+        if n.startswith('concerto/') and (n.startswith('concerto/edition/') or n.startswith('concerto/audio/') or n in ('concerto/shore.webp','concerto/program.json')):
+            ext=Path(n).suffix
+            if ext in mt:files[n[len('concerto/'):]]=[mt[ext],base64.b64encode(read(n)).decode()]
+    js="window.SHORE_FILES={};for(const [p,[m,b]] of Object.entries("+json.dumps(files,separators=(',',':'))+")){window.SHORE_FILES[p]=URL.createObjectURL(new Blob([Uint8Array.from(atob(b),c=>c.charCodeAt(0))],{type:m}))}"
+    # Rebind static URLs before attaching media. The player also resolves dynamic URLs against SHORE_FILES.
+    sh=sh.replace('<script src="room.js" defer></script>','<script>'+js+'</script>')
+    for f in files:
+        for att in ['src','href']:
+            sh=sh.replace(att+'="'+f+'"','data-shore-'+att+'="'+f+'"')
+    sh=sh.replace('</body>',"""<script>for(const e of document.querySelectorAll('[data-shore-src],[data-shore-href]'))for(const a of ['src','href']){const p=e.getAttribute('data-shore-'+a);if(p)e.setAttribute(a,window.SHORE_FILES[p])}</script>"""+'<script>'+code(text('concerto/room.js'))+'</script></body>')
+    extra['the-other-shore']=sh
     assets={n:uri(n) for n in names if n.startswith('assets/') and Path(n).suffix in {'.jpg','.png','.webp'}}
     h=text('index.html').replace('<link rel="stylesheet" href="style.css">','<style>'+text('style.css')+'</style>')
     for name in ['assets/sable-cover.jpg','assets/orchestra-cover.jpg']:
         h=h.replace('src="'+name+'"','src="'+assets[name]+'"')
-    for n in ['assets/plates/the-city-that-fits-in-a-book.webp']:
+    for n in ['assets/plates/the-city-that-fits-in-a-book.webp','assets/plates/the-other-shore.webp']:
         h=h.replace('src="'+n+'"','src="'+assets[n]+'"')
     h=h.replace('window.ASTRA=[];', 'window.ASTRA=[];window.ASTRA_ASSETS='+json.dumps(assets,separators=(',',':'))+';window.SABLE_OFFLINE_HTML='+code(json.dumps(game))+';window.ORCHESTRA_OFFLINE_HTML='+code(json.dumps(concert))+';window.ASTRA_STANDALONE='+code(json.dumps(extra,separators=(',',':')))+';')
     return embed(h,'')

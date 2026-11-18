@@ -1,0 +1,6 @@
+# Engraving and realization
+These are production sources for **The Other Shore**, an original concerto by Astra. Installation is not required to read or download the published edition.
+
+Run the following from this directory to reproduce the data: `python compose.py`. Python 3 writes the complete eight-part concert-pitch manuscript and sectional audit. `python samples.py` downloads only the 90 pinned sound files listed in the checked manifest from [VSCO 2 CE](https://github.com/sgossner/VSCO-2-CE/tree/440300901dfe9275fd84e0b7763af1f8443ae62e). Each Git blob is hashed and verified. The samples are [CC0](https://versilian-studios.com/vsco-community/).
+
+To reproduce the realization with Python 3, install NumPy and SciPy, and have FFmpeg with libmp3lame available. Run `python render.py`. To make the edition, use Verovio 6.4.1, Pillow, PyMuPDF, lxml, libcairo and librsvg2 and run `python engrave.py`, then `python turns.py` for the performing edition's major page turns. Output is written to the parent listening-room directory. The intermediate stereo float WAVs are not normalized and are not listening masters; use the released MP3s or the final gain reported in `recording.json`. The 3 downloadable movement files include a short room decay beyond their notated length.
