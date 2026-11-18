@@ -1,0 +1,17 @@
+{
+    "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "dimensions": [
+        504,
+        336
+    ],
+    "trajectories": 169344,
+    "steps": 780,
+    "dt": 0.016,
+    "horizon_seconds": 12.48,
+    "rk4_steps": 132088320,
+    "first_arm_inversions": 14740,
+    "second_arm_inversions": 85904,
+    "no_inversion": 68700,
+    "runtime_seconds": 0.9,
+    "sha256": "8cb8cedc9962eea05a134ed9eb54e20370d3ecb79655286d35c5c69ada9c5991"
+}

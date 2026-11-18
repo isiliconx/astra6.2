@@ -1,0 +1,12 @@
+{
+    "title": "Corona Loom",
+    "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "width": 1152,
+    "height": 728,
+    "samples": 9437184,
+    "filaments": 2304,
+    "samples_per_filament": 4096,
+    "seed": 620614,
+    "seconds": 0.165,
+    "sha256": "5dee7e2dbe0cb914804258b25642029ee8a814492ca339684aaa5be93deaaf76"
+}
