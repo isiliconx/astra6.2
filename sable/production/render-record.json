@@ -1,0 +1,24 @@
+{
+  "backend": "OPTIX",
+  "blender": "4.5.15 LTS",
+  "samples": 96,
+  "seal_seconds": 0.93,
+  "hero_seconds": 5.13,
+  "object_count": 690,
+  "seal_objects": 88,
+  "device": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "image_pixels": [
+    1440,
+    900
+  ],
+  "seal_pixels": [
+    256,
+    256
+  ],
+  "sha256": {
+    "vault.jpg": "c1e94546a2925a30bed88dfd769a0b94c8af68c8fc9d4f138070d7e783b2efbb",
+    "seal.png": "44a890abfd48b41a20dc3c6594d49487acb743d3210de7120b5a237e738a5f0d",
+    "seal.glb": "bdcb1fcfed48d3db56c3aa79505668af25a938e2943e1499410884246959e92c",
+    "Sable-Relay-Optical-Vault.blend": "fbdb015b8df7c32343ca1f4c426bcfed4de6b3340c0e8ea3602edab1e1f5d4a0"
+  }
+}

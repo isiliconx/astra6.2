@@ -4,6 +4,12 @@
 
 A browser cabinet of original instruments, simulations, sculptures and games built with Astra 6.2. Search the collection, filter by discipline, or open any exhibit by its `#lab/id` link. Every instrument has controls, a short explanation, pause/restart and PNG frame export.
 
+## Featured game: [Sable Relay](https://isiliconx.github.io/astra6.2/sable/)
+
+A first-person optical vault with three hand-authored puzzles. Walk the chambers, rotate the optical mirrors, and use reflected light to unlock each northern gate. A WebGPU ray tracer draws the world and its specular reflections; WebGL2 is the alternate 3D renderer. Tactical mode preserves the whole campaign without a 3D API.
+
+[Game source and production details](sable/) · [Native Unreal Engine 5 C++ source](sable/unreal/) · [Blender production script](sable/production/build_vault.py)
+
 ## Start here
 
 - **[Flip Atlas](https://isiliconx.github.io/astra6.2/#lab/flip-atlas)** — launch a double pendulum from a point on a GPU-computed first-inversion map.
@@ -34,4 +40,4 @@ To create a single HTML file with embedded visuals and scripts:
 python studio/bundle.py astra-observatory.html
 ```
 
-Each classic script in `labs/` registers an experiment with its controls, canvas renderer and explanatory copy. Previews are renders of the same instruments, not decorative placeholders. The interactive browser version uses Canvas 2D and native input. Its purpose is exploration, not engineering, medical or navigation use.
+Each classic script in `labs/` registers an experiment with its controls, canvas renderer and explanatory copy. Previews are renders of the instruments or game artwork. The instruments use Canvas 2D and native input. The Sable Relay game uses its own hardware-accelerated renderer. Its purpose is exploration, not engineering, medical or navigation use.
