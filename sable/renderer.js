@@ -157,7 +157,7 @@ ${wgslBody(scene)}
     }catch{return null;}}
   // An adapter can compile WGSL successfully and still have no presentable swapchain
   // (notably remote/headless desktops). Test a sacrificial canvas before locking the
-  // game's canvas to a context type; if presentation fails, WebGL2 remains available.
+  // game's canvas to a context type; if presentation fails, use GPU texture readback instead.
   async function canPresent(device,format){
     const tmp=document.createElement('canvas');tmp.width=4;tmp.height=4;const cx=tmp.getContext('webgpu');
     if(!cx)throw Error('WebGPU canvas unavailable');let read=null,timer;
@@ -166,11 +166,40 @@ ${wgslBody(scene)}
       read=device.createBuffer({size:256,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});e.copyTextureToBuffer({texture:img},{buffer:read,bytesPerRow:256},[1,1]);device.queue.submit([e.finish()]);
       await Promise.race([read.mapAsync(GPUMapMode.READ),new Promise((_,rej)=>{timer=setTimeout(()=>rej(Error('WebGPU presentation probe timed out')),6500);})]);
       const rgba=new Uint8Array(read.getMappedRange());if(rgba[1]<125||rgba[3]<250)throw Error('WebGPU canvas readback failed');read.unmap();
+      // Some compositors accept native swap textures but cannot import them into a
+      // visible layer. Draw a fresh clear and test the browser's canvas interop path.
+      const fresh=cx.getCurrentTexture(),q=device.createCommandEncoder(),p=q.beginRenderPass({colorAttachments:[{view:fresh.createView(),loadOp:'clear',storeOp:'store',clearValue:{r:.4,g:.6,b:.2,a:1}}]});p.end();device.queue.submit([q.finish()]);
+      const sig=document.createElement('canvas');sig.width=4;sig.height=4;const g=sig.getContext('2d',{willReadFrequently:true});if(!g)throw Error('No canvas inspection surface');g.drawImage(tmp,0,0);const c=g.getImageData(1,1,1,1).data;
+      if(c[1]<123||c[1]>186||c[0]<75||c[0]>139||c[3]<245)throw Error('WebGPU canvas composition failed');
     }finally{clearTimeout(timer);if(read)read.destroy();cx.unconfigure();}}
+  // This presenter changes *only* transport. Shading, shadows and ray traversal are
+  // still executed by the WGSL GPU render pipeline. Two readback buffers bound the
+  // maximum in-flight work; drop a stale frame rather than growing a queue.
+  function readbackPresenter(canvas,device,drawScene,release){
+    const painter=canvas.getContext('2d',{alpha:false,willReadFrequently:true});if(!painter)throw Error('Readback presenter needs a canvas');
+    let current=null,dead=false,failed='',issued=0,shown=0,slotIndex=0,latency=25,warm=0;const skip=()=>{};
+    function retire(set){if(!set)return;set.dead=true;set.texture.destroy();for(const slot of set.slots)if(!slot.busy)slot.buffer.destroy();}
+    function make(w,h){const pitch=Math.ceil(w*4/256)*256;const tex=device.createTexture({label:'Sable / presentation',size:[w,h],format:'rgba8unorm',usage:GPUTextureUsage.RENDER_ATTACHMENT|GPUTextureUsage.COPY_SRC});
+      const slots=Array.from({length:2},()=>({busy:false,buffer:device.createBuffer({size:pitch*h,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ})}));
+      return {texture:tex,view:tex.createView(),pitch,w,h,slots,dead:false,pixels:painter.createImageData(w,h)};}
+    device.lost.then(reason=>{if(!dead)failed=reason.message||'WebGPU device lost';},skip);
+    return {kind:'WebGPU',presentation:'readback',get renderMs(){return warm>3?latency:0;},submit(a,w,h){
+      if(failed)throw Error(failed);if(dead)return;if(!current||current.w!==w||current.h!==h){retire(current);current=make(w,h);}
+      const set=current;let slot=set.slots[slotIndex];if(slot.busy)slot=set.slots[1-slotIndex];if(slot.busy)return;slotIndex=1-slotIndex;slot.busy=true;
+      const n=++issued,started=performance.now(),cmd=device.createCommandEncoder();drawScene(cmd,set.view,a);
+      cmd.copyTextureToBuffer({texture:set.texture},{buffer:slot.buffer,bytesPerRow:set.pitch},[w,h]);device.queue.submit([cmd.finish()]);
+      slot.buffer.mapAsync(GPUMapMode.READ).then(()=>{try{
+        if(!dead&&!set.dead&&canvas.width===w&&canvas.height===h&&n>shown){const bytes=new Uint8Array(slot.buffer.getMappedRange());const dst=set.pixels.data,row=w*4;
+          if(set.pitch===row)dst.set(bytes.subarray(0,row*h));else for(let y=0;y<h;y++)dst.set(bytes.subarray(y*set.pitch,y*set.pitch+row),y*row);
+          painter.putImageData(set.pixels,0,0);shown=n;warm++;latency=latency*.85+Math.min(180,performance.now()-started)*.15;}
+        }catch(e){if(!set.dead&&!dead)failed=e.message||String(e);}finally{slot.buffer.unmap();slot.busy=false;if(dead||set.dead)slot.buffer.destroy();}
+      },e=>{slot.busy=false;if(dead||set.dead)slot.buffer.destroy();else failed=e.message||String(e);});},destroy(){dead=true;retire(current);release();}};
+  }
   async function webgpu(canvas,opts,bitmap){if(!navigator.gpu)throw Error('WebGPU unavailable');
-    const adapter=await navigator.gpu.requestAdapter({powerPreference:'high-performance'});if(!adapter)throw Error('No WebGPU adapter');
-    const device=await adapter.requestDevice();let context=null,buf=null,tex=null;
-    try{const format=navigator.gpu.getPreferredCanvasFormat();await canPresent(device,format);const module=device.createShaderModule({label:'Sable / gallery transport',code:gpuSource});
+    async function getDevice(){const adapter=await navigator.gpu.requestAdapter({powerPreference:'high-performance'});if(!adapter)throw Error('No WebGPU adapter');return adapter.requestDevice();}
+    let device=await getDevice(),direct=!opts.forceReadback,context=null,buf=null,tex=null;
+    try{const nativeFormat=navigator.gpu.getPreferredCanvasFormat();if(direct){try{await canPresent(device,nativeFormat);}catch(e){console.info('Sable: using GPU texture readback presentation.',String(e));direct=false;device.destroy();device=await getDevice();}}
+      const format=direct?nativeFormat:'rgba8unorm';const module=device.createShaderModule({label:'Sable / gallery transport',code:gpuSource});
       if(module.getCompilationInfo){const info=await module.getCompilationInfo();const bad=info.messages.filter(v=>v.type==='error');if(bad.length)throw Error(bad.slice(0,8).map(e=>e.lineNum+':'+e.linePos+' '+e.message).join('\n'));}
       const desc={layout:'auto',vertex:{module,entryPoint:'vs'},fragment:{module,entryPoint:'fs',targets:[{format}]},primitive:{topology:'triangle-list'}};
       const pipe=await device.createRenderPipelineAsync(desc);
@@ -178,8 +207,11 @@ ${wgslBody(scene)}
       tex=device.createTexture({size:[bitmap?.width||1,bitmap?.height||1],format:'rgba8unorm',usage:GPUTextureUsage.TEXTURE_BINDING|GPUTextureUsage.COPY_DST|GPUTextureUsage.RENDER_ATTACHMENT});
       if(bitmap)device.queue.copyExternalImageToTexture({source:bitmap},{texture:tex},[bitmap.width,bitmap.height]);else device.queue.writeTexture({texture:tex},new Uint8Array([132,118,89,255]),{},[1,1]);
       const bind=device.createBindGroup({layout:pipe.getBindGroupLayout(0),entries:[{binding:0,resource:{buffer:buf}},{binding:1,resource:tex.createView()},{binding:2,resource:device.createSampler({minFilter:'linear',magFilter:'linear'})}]});
+      const release=()=>{buf.destroy();tex.destroy();device.destroy();};
+      const drawScene=(cmd,view,a)=>{device.queue.writeBuffer(buf,0,a);const pass=cmd.beginRenderPass({colorAttachments:[{view,loadOp:'clear',storeOp:'store',clearValue:{r:.06,g:.09,b:.1,a:1}}]});pass.setPipeline(pipe);pass.setBindGroup(0,bind);pass.draw(3);pass.end();};
+      if(!direct)return readbackPresenter(canvas,device,drawScene,release);
       let lostReason='';device.lost.then(info=>{lostReason=info.message||'WebGPU device lost';});context=canvas.getContext('webgpu');if(!context)throw Error('GPU canvas unavailable');context.configure({device,format,alphaMode:'opaque'});
-      return {kind:'WebGPU',submit(a){if(lostReason)throw Error(lostReason);device.queue.writeBuffer(buf,0,a);const cmd=device.createCommandEncoder();const pass=cmd.beginRenderPass({colorAttachments:[{view:context.getCurrentTexture().createView(),loadOp:'clear',storeOp:'store',clearValue:{r:.06,g:.09,b:.1,a:1}}]});pass.setPipeline(pipe);pass.setBindGroup(0,bind);pass.draw(3);pass.end();device.queue.submit([cmd.finish()]);},destroy(){context.unconfigure();buf.destroy();tex.destroy();device.destroy();}};
+      return {kind:'WebGPU',presentation:'direct',submit(a){if(lostReason)throw Error(lostReason);const cmd=device.createCommandEncoder();drawScene(cmd,context.getCurrentTexture().createView(),a);device.queue.submit([cmd.finish()]);},destroy(){context.unconfigure();release();}};
     }catch(e){if(context)context.unconfigure();if(buf)buf.destroy();if(tex)tex.destroy();device.destroy();throw e;}}
   function webgl(canvas,opts,bitmap){const gl=canvas.getContext('webgl2',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'high-performance',preserveDrawingBuffer:!!opts.preserveDrawingBuffer});if(!gl)throw Error('WebGL2 unavailable');const shaders=[];
     function compile(type,src){const ss=gl.createShader(type);shaders.push(ss);gl.shaderSource(ss,src);gl.compileShader(ss);if(!gl.getShaderParameter(ss,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(ss));return ss;}
@@ -192,9 +224,9 @@ ${wgslBody(scene)}
   async function create(canvas,opts={}){let gpuError='';let backend;const bitmap=await getSeal(opts);if(!opts.forceWebGL){try{backend=await webgpu(canvas,opts,bitmap);}catch(e){gpuError=String(e);console.info('Sable: switching from WebGPU to WebGL2.',gpuError);}}
     try{if(!backend)backend=webgl(canvas,opts,bitmap);}catch(e){bitmap?.close();throw Error((gpuError?gpuError+' / ':'')+e.message);}
     const hasSeal=!!bitmap;bitmap?.close();const a=new Float32Array(SLOTS*4);let last=0,avg=16.7,frames=0,scale=1,dead=false;
-    const maxPixels=opts.maxPixels||235000,minPixels=Math.min(maxPixels,opts.minPixels||72000);
-    return {kind:backend.kind,draw(state){if(dead)return;const now=performance.now();if(last&&now-last<220){avg=avg*.94+Math.max(1,now-last)*.06;}last=now;
-      if(++frames%45===0&&!opts.fixedResolution){if(avg>39)scale=Math.max(minPixels/maxPixels,scale*.82);else if(avg<20.5)scale=Math.min(1,scale*1.09);}
+    const maxPixels=opts.maxPixels||(backend.presentation==='readback'?160000:235000),minPixels=Math.min(maxPixels,opts.minPixels||72000);
+    return {kind:backend.kind,presentation:backend.presentation||'direct',draw(state){if(dead)return;const now=performance.now();if(last&&now-last<220){avg=avg*.94+Math.max(1,now-last)*.06;}last=now;
+      if(++frames%45===0&&!opts.fixedResolution){if(Math.max(avg,backend.renderMs||0)>39)scale=Math.max(minPixels/maxPixels,scale*.82);else if(Math.max(avg,backend.renderMs||0)<20.5)scale=Math.min(1,scale*1.09);}
       const css=canvas.getBoundingClientRect();const cw=Math.max(2,Math.round(css.width||canvas.clientWidth||640)),ch=Math.max(2,Math.round(css.height||canvas.clientHeight||360));
       const r=Math.min(window.devicePixelRatio||1,Math.sqrt(maxPixels*scale/(cw*ch)));const w=Math.max(2,Math.round(cw*r)),h=Math.max(2,Math.round(ch*r));
       if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}pack(a,state,w,h,hasSeal);backend.submit(a,w,h);},destroy(){if(!dead){dead=true;backend.destroy();}}};}
